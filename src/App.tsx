@@ -1,10 +1,32 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { supabase } from '../utils/supabase'
 
 function App() {
   const [count, setCount] = useState(0)
+useEffect(() => {
+    async function getTodos() {
+      try {
+        
+        let { data: expenses } = await supabase
+        .from('User_expenses')
+        .select('*')
+        
+        if (expenses && expenses.length >= 1) {
+          console.log(expenses)
+        } else {
+          console.log('not working')
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+    getTodos()
+  }, [])
+
 
   return (
     <>
