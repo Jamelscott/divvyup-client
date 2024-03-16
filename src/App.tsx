@@ -1,55 +1,27 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { supabase } from '../utils/supabase'
+import Login from './Login/Login'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import SignUp from './SignUp/SignUp.tsx'
+import Navbar from './Navbar/Navbar.tsx'
 
 function App() {
-  const [count, setCount] = useState(0)
-useEffect(() => {
-    async function getTodos() {
-      try {
-        
-        let { data: expenses } = await supabase
-        .from('User_expenses')
-        .select('*')
-        
-        if (expenses && expenses.length >= 1) {
-          console.log(expenses)
-        } else {
-          console.log('not working')
-        }
-      } catch (err) {
-        console.log(err)
-      }
-    }
 
-    getTodos()
-  }, [])
-
+  const {user, setUser}: any = useState({
+    username: '',
+    email: ''
+  })
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <BrowserRouter>
+        <Navbar/>
+      <Routes>
+        <Route path='/' element={<Login user={user} setUser={setUser} />} />
+        <Route path='/signup' element={<SignUp setUser={setUser}/>}/>
+      </Routes>
+    </BrowserRouter>
     </>
   )
 }
