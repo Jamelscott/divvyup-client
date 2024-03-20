@@ -1,8 +1,9 @@
 import { Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "../../utils/supabase";
+import './signup.css'
 
-function SignUp({setUser}: any) {
+function SignUp({user, setUser}: any) {
   const [signUpCreds, setSignUpCreds] = useState({
     username: "",
     email: "",
@@ -14,31 +15,33 @@ function SignUp({setUser}: any) {
   const handleSignUpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setError("");
     e.preventDefault();
-    // if (!signUpCreds.username || signUpCreds.username.split("").length < 4) {
-    //   setError("invalid username, must be more then 3 characters");
-    //   return
-    // }
-    // if (!signUpCreds.email || signUpCreds.email.split("@")[0].length < 4) {
-    //   setError("invalid email");
-    //   return
-    // }
-    // if (signUpCreds.password.length < 5) {
-    //   setError("invalid password, must be at least 5 characeters");
-    //   return
-    // }
-    // if (signUpCreds.password !== signUpCreds.confirmPassword) {
-    //   setError("passwords do not match");
-    //   return
-    // }
-    try {
-      let { data, error }: any = await supabase.auth.signUp({
-        email: 'itsjamelscott@gmail.com',
-        password: 'abc123',
-      })
-      setUser(data)
-      console.log(data, error)
-  } catch(error: any) {
-      setError(error.msg)
+    if (!signUpCreds.username || signUpCreds.username.split("").length < 4) {
+      setError("invalid username, must be more then 3 characters");
+      return
+    }
+    if (!signUpCreds.email || signUpCreds.email.split("@")[0].length < 4) {
+      setError("invalid email");
+      return
+    }
+    if (signUpCreds.password.length < 5) {
+      setError("invalid password, must be at least 5 characeters");
+      return
+    }
+    if (signUpCreds.password !== signUpCreds.confirmPassword) {
+      setError("passwords do not match");
+      return
+    }
+    if (!user) {
+      let { data: user, error } = await supabase.auth.signUp({
+          email: 'someone@email.com',
+          password: 'UIaOleFbeBkloSANDEKq'
+          })
+      if (error) {
+        setError('User is already signed up')
+        return console.log('User is signed up')
+      }
+      setUser(user)
+      console.log(user)
   }
 
   };

@@ -4,6 +4,7 @@ import "./login.css";
 import { supabase } from "../../utils/supabase";
 
 function Login({ user, setUser }: any) {
+  console.log(user)
   const [loginCreds, setLoginCreds] = useState({
     name: "",
     password: "",
@@ -16,7 +17,13 @@ function Login({ user, setUser }: any) {
         email: 'someone@email.com',
         password: 'AbchLBhOkLAbwnXjEjWL'
       })
-      console.log(data, error)
+    if (data) {
+      setUser(data)
+      console.log('logged in', data)
+    } else {
+      console.log(error)
+      setMsg('user is already logged in')
+    }
   }
 
   return (
@@ -64,7 +71,7 @@ function Login({ user, setUser }: any) {
               setLoginCreds({ ...loginCreds, password: e.target.value })
             }
           />
-          <input className="login-submit-button" type="submit" value="Submit" />
+          <input disabled={user} className="login-submit-button" type="submit" value="Submit" />
         </form>
         <hr className="whiteLine"></hr>
         <p className="questionText">
@@ -90,7 +97,6 @@ function Login({ user, setUser }: any) {
         <p className="questionText">username: visitor </p>
         <p className="questionText">password: visitor </p>
       </div>
-      {user ?? <div>logged In</div>}
     </>
   );
 }
