@@ -37,11 +37,17 @@ function Navbar({user, setUser}: any) {
         }
     }
 
+    const handleUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser()
+        console.log(user)
+    }
+
     return ( 
         <>
             {/* <button disabled={user} onClick={handleSignUp}>SignUp</button> */}
             {/* <button disabled={user} onClick={handleLogin}>Log in</button> */}
             <button disabled={!user} onClick={handleLogout}>Log out</button>
+            <button onClick={handleUser}>console log user</button>
         </>
      );
 }

@@ -8,16 +8,17 @@ function Login({ user, setUser }: any) {
   const [loginCreds, setLoginCreds] = useState({
     name: "",
     password: "",
+    email: ""
   });
   const [msg, setMsg] = useState("")
 
   const handleLogin = async (e: any) => {
     e.preventDefault()
     let { data, error }: any = await supabase.auth.signInWithPassword({
-        email: 'someone@email.com',
-        password: 'AbchLBhOkLAbwnXjEjWL'
+      email: loginCreds.email,
+      password: loginCreds.email,
       })
-    if (data) {
+    if (data.user !== null) {
       setUser(data)
       console.log('logged in', data)
     } else {

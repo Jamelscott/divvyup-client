@@ -33,8 +33,13 @@ function SignUp({user, setUser}: any) {
     }
     if (!user) {
       let { data: user, error } = await supabase.auth.signUp({
-          email: 'someone@email.com',
-          password: 'UIaOleFbeBkloSANDEKq'
+          email: signUpCreds.email,
+          password: signUpCreds.password,
+          options:{
+            data: {
+              name: signUpCreds.username
+            }
+          }
           })
       if (error) {
         setError('User is already signed up')
