@@ -8,7 +8,6 @@ function TestFriends({user}: {user: User}) {
     const [requests, setRequests] = useState([])
 
     useEffect(() => {
-        let attempt = 0
         async function getToken() {
             const requests: any = await getFriendRequests(user);
             setRequests(requests);
