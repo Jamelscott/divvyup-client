@@ -1,16 +1,19 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "../../utils/supabase";
 import './signup.css'
+import { User, UserSignUp } from "../utils/types";
+import { userBuilder } from "../utils/loginHelpers";
 
-function SignUp({user, setUser}: any) {
-  const [signUpCreds, setSignUpCreds] = useState({
+function SignUp({user, setUser}: {user: User, setUser: React.Dispatch<React.SetStateAction<User>>}) {
+  const navigate = useNavigate()
+  const [signUpCreds, setSignUpCreds] = useState<UserSignUp>({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
   const handleSignUpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setError("");
@@ -31,22 +34,38 @@ function SignUp({user, setUser}: any) {
       setError("passwords do not match");
       return
     }
-    if (!user) {
-      let { data: user, error } = await supabase.auth.signUp({
-          email: signUpCreds.email,
-          password: signUpCreds.password,
-          options:{
-            data: {
-              name: signUpCreds.username
-            }
-          }
-          })
+    if (!user || !user.id) {
+      let { data, error } = await supabase.auth.signUp({
+        email: signUpCreds.email,
+        password: signUpCreds.password,
+        options: {
+          data: {
+            username: signUpCreds.username,
+          },
+        },
+      })
       if (error) {
-        setError('User is already signed up')
-        return console.log('User is signed up')
+        if (error.message === 'duplicate key value violates unique constraint "profiles_username_key"') {
+          console.log('error: ', error)
+          setError('Username already in use')
+          return
+        } else {
+          console.log('error: ', error)
+          setError('User is already signed up')
+          return
+        }
       }
-      setUser(user)
-      console.log(user)
+      if (data.user === null) {
+        throw new Error('user not found, returning null from server')
+      }
+      if (data.user.email === undefined) {
+        throw new Error('user email not found, returning null from server')
+      }
+
+      const newUser = userBuilder(data.user)
+      setUser(newUser)
+      console.log(newUser)
+      navigate('/')
   }
 
   };

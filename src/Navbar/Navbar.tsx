@@ -1,53 +1,33 @@
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../utils/supabase";
+import { handleGetUser, handleLogout } from "../utils/loginHelpers";
+import { User as SupaUser } from "@supabase/supabase-js";
 
 function Navbar({user, setUser}: any) {
-    // const handleSignUp =  async () => {
-    //     if (!user) {
-    //     let { data: user, error } = await supabase.auth.signUp({
-    //         email: 'someone@email.com',
-    //         password: 'UIaOleFbeBkloSANDEKq'
-    //         })
-    //     if (error) return console.log(error)
-    //     setUser(user)
-    //     console.log(user)
-    //     console.log('User is signed up')
-    //     } else {
-    //         console.log('user is already logged in')
-    //     }
-    // }
+    const navigate = useNavigate()
 
-    // const handleLogin =  async () => {
-    //     let { data: user, error } = await supabase.auth.signInWithPassword({
-    //         email: 'someone@email.com',
-    //         password: 'UIaOleFbeBkloSANDEKq'
-    //     })
-    //     if (error) return console.log(error)
-    //     setUser(user)
-    //     console.log('user has logged in')
-    // }
+    const testProfile = async () => {
+        const { data, error } : any = await supabase.from("profiles").select()
+        data ? console.log(data) : console.log(error)
+    }
 
-    const handleLogout =  async () => {
+    const logout =  async (user : SupaUser) => {
         if (user) {
-            let { error } = await supabase.auth.signOut()
+            const error = await handleLogout()
             if (error) return console.log(error)
-            setUser(null)
+            navigate('/login')
             console.log('user logged out')
+            return null
         } else {
             console.log('no user is signed in')
         }
     }
-
-    const handleUser = async () => {
-        const { data: { user } } = await supabase.auth.getUser()
-        console.log(user)
-    }
-
+    
     return ( 
         <>
-            {/* <button disabled={user} onClick={handleSignUp}>SignUp</button> */}
-            {/* <button disabled={user} onClick={handleLogin}>Log in</button> */}
-            <button disabled={!user} onClick={handleLogout}>Log out</button>
-            <button onClick={handleUser}>console log user</button>
+            <button disabled={!user.id} onClick={() => setUser(logout(user))}>Log out</button>
+            <button onClick={handleGetUser}>console log user</button>
+            <button onClick={testProfile}> test profile</button>
         </>
      );
 }

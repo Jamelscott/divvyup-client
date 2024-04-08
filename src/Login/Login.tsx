@@ -1,28 +1,35 @@
-import { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./login.css";
-import { supabase } from "../../utils/supabase";
+import { loginEmailOrUsername } from '../utils/loginHelpers'
+import { User, UserLogin } from "../utils/types";
 
-function Login({ user, setUser }: any) {
-  console.log(user)
-  const [loginCreds, setLoginCreds] = useState({
-    name: "",
-    password: "",
-    email: ""
-  });
+function Login({ user, setUser }: {user: User, setUser: React.Dispatch<React.SetStateAction<User>>}) {
+  const navigate = useNavigate();
+  if (user.id) navigate('/')
+
   const [msg, setMsg] = useState("")
+  const [loginCreds, setLoginCreds] = useState<UserLogin>({
+    usernameOrEmail: "",
+    password: "",
+  });
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    let { data, error }: any = await supabase.auth.signInWithPassword({
-      email: loginCreds.email,
-      password: loginCreds.email,
-      })
-    if (data.user !== null) {
-      setUser(data)
-      console.log('logged in', data)
-    } else {
-      console.log(error)
+    try {
+      const loggedUser = await loginEmailOrUsername(loginCreds)
+
+      if (!loggedUser) throw new Error('logged in user not found')
+
+      if (loggedUser.username !== null) {
+        setUser(loggedUser)
+        console.log('logged in', loggedUser)
+        navigate('/')
+      } else {
+        throw new Error()
+      }
+    } catch (err) {
+      console.log(err)
       setMsg('user is already logged in')
     }
   }
@@ -57,10 +64,10 @@ function Login({ user, setUser }: any) {
           <input
             className="login-input-field"
             type="text"
-            placeholder="username.."
-            value={loginCreds.name}
+            placeholder="username or email.."
+            value={loginCreds.usernameOrEmail}
             onChange={(e) =>
-              setLoginCreds({ ...loginCreds, name: e.target.value })
+              setLoginCreds({ ...loginCreds, usernameOrEmail: e.target.value })
             }
           />
           <input
@@ -72,7 +79,7 @@ function Login({ user, setUser }: any) {
               setLoginCreds({ ...loginCreds, password: e.target.value })
             }
           />
-          <input disabled={user} className="login-submit-button" type="submit" value="Submit" />
+          <input className="login-submit-button" type="submit" value="Submit" />
         </form>
         <hr className="whiteLine"></hr>
         <p className="questionText">
