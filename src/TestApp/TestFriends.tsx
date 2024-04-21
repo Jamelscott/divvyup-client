@@ -1,41 +1,44 @@
-import { useForm } from "react-hook-form";
-import { acceptFriendRequest, getFriendRequests, handleRequestFriend, rejectFriendRequest } from "../utils/friendHelpers";
-import { User } from "../utils/types";
-import { useEffect, useState } from "react";
+import { useForm } from 'react-hook-form';
+import { acceptFriendRequest, getFriendRequests, getFriends, handleRequestFriend, rejectFriendRequest } from '../utils/friendHelpers';
+import { FriendRequest } from '../utils/types';
+import { useContext, useEffect, useState } from 'react';
+import { UserContext, UserContextType } from '../context/userContext';
 
-function TestFriends({user}: {user: User}) {
-    const { register, handleSubmit }= useForm()
-    const [requests, setRequests] = useState([])
+function TestFriends() {
+    const { user } = useContext(UserContext) as UserContextType;
+    const { register, handleSubmit } = useForm();
+    const [requests, setRequests] = useState<FriendRequest[]>([]);
 
     useEffect(() => {
-        async function getToken() {
-            const requests: any = await getFriendRequests(user);
+        async function getRequests() {
+            const requests = await getFriendRequests(user);
             setRequests(requests);
         }
-        getToken();
-     }, [])
-    
+        getRequests();
+    }, [user]);
 
-    return ( 
+
+    return (
         <>
             <form onSubmit={handleSubmit((data) => handleRequestFriend(data.emailOrUsername, user))}>
-                <input defaultValue="jameloscott" {...register("emailOrUsername")} />
+                <input defaultValue="jameloscott" {...register('emailOrUsername')} />
                 <input type="submit" value="add Friend" />
             </form>
             <p><b>Friend Requests</b></p>
             <ol>
-            {requests.map((request: any) => {
-                return (
-                    <div key={request.id}>
-                        <li>{request.requestee_username}</li>
-                        <input type="button" value="accept" onClick={() => acceptFriendRequest(request.id)} />
-                        <input type="button" value="reject" onClick={() => rejectFriendRequest(request.id)}/>
-                    </div>
-                )
-            })}
+                {requests.length > 0 ? requests.map((request) => {
+                    return (
+                        <div key={request.id}>
+                            <li>{request.requester_uuid === user.id ? request.requestee_username : request.requester_username}</li>
+                            <input type="button" disabled={request.requester_uuid === user.id} value="accept" onClick={() => acceptFriendRequest(request.id)} />
+                            <input type="button" value={request.requester_uuid === user.id ? 'remove friend requeset' : 'reject'} onClick={() => rejectFriendRequest(request.id)} />
+                        </div>
+                    );
+                }) : <p>you have no pending friends</p>}
             </ol>
+            <input type="button" value="log all friends" onClick={() => getFriends(user.id)} />
         </>
-     );
+    );
 }
 
 export default TestFriends;

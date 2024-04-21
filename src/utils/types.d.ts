@@ -2,7 +2,6 @@ export type User = {
     id: string,
     username: string,
     email: string,
-    expenses: Expense[]
 }
 
 export type UserSignUp = {
@@ -33,3 +32,23 @@ export type Expense = {
 }
 
 export type ExpenseType = 'Entertainment' | 'Food and Drink' | 'Home' | 'Transportation' | 'Life' | 'Utility'
+
+export type FriendRequest = {
+    id: string,
+    type: string,
+    requester_username: string,
+    requestee_username: string,
+    requester_uuid: string,
+    requestee_uuid: string,
+    updated_at: Date,
+    created_at: Date
+}
+
+export type Profile = {
+    id: string,
+    email: string,
+    username: string,
+    expenseIds: string[],
+    updated_at: Date,
+    created_at: Date
+}

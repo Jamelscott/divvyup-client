@@ -1,21 +1,34 @@
-import { useForm } from "react-hook-form";
-import { handleAddExpense } from "../utils/expenseHelpers";
-import { Expense } from "../utils/types";
+import { useContext, useEffect, useState } from 'react';
+import { getFriends } from '../utils/friendHelpers';
+import { UserContext, UserContextType } from '../context/userContext';
+import TestModal from './TestModal';
 
 function TestAddExpenseForm() {
-    const { register, handleSubmit }= useForm()
-    return ( 
+    const { user } = useContext(UserContext) as UserContextType;
+    const [friends, setFriends] = useState<any>();
+    const [openModal, setOpenModal] = useState<any>(false);
+
+    useEffect(() => {
+        async function fetchFriends() {
+            const fetchedFriends = await getFriends(user.id);
+            setFriends(fetchedFriends);
+        }
+        fetchFriends();
+    }, [user]);
+
+    return (
         <>
-            <form onSubmit={handleSubmit((data) => handleAddExpense(data as Expense))}>
-                <input defaultValue="carrots" {...register("name")} />
-                <input defaultValue="grocery" {...register("type")} />
-                <input defaultValue="ff07e530-7293-4659-a781-f5c63d7e61f1" {...register("lender")} />
-                <input defaultValue="d39a1198-93ad-4a44-8483-46a2b6955f77" {...register("ower")} />
-                <input defaultValue="12.56" {...register("quantity")} />
-                <input type="submit" />
-            </form>
+            <hr></hr>
+            <h1>Friends: </h1>
+            {
+                friends?.map((friend: any) => {
+                    return <button onClick={() => openModal ? setOpenModal(false) : setOpenModal(friend)} key={friend.id}>{friend.username}</button>
+                })
+            }
+            <hr></hr>
+            {openModal && <TestModal friend={openModal} />}
         </>
-     );
+    );
 }
 
 export default TestAddExpenseForm;
