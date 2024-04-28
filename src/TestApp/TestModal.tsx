@@ -1,33 +1,73 @@
 import { useForm } from 'react-hook-form';
 import './styles/testModal.css'
 import { handleAddExpense } from '../utils/expenseHelpers';
-import { Expense } from '../utils/types';
-function TestModal({ friend }: any) {
-        console.log(friend)
-        const { register, handleSubmit } = useForm();
+import { User, addExpense } from '../types';
+import { useContext, useState } from 'react';
+import { UserContext, UserContextType } from '../context/userContext';
+import { itemTypes } from '../utils/expenseHelpers';
+function TestModal({ setOpenModal }: { setOpenModal: React.Dispatch<React.SetStateAction<boolean>> }) {
+        const { register, handleSubmit, setValue } = useForm();
+        const { user, friends, setUpdateContext } = useContext(UserContext) as UserContextType;
+        const [splitWith, setSplitWith] = useState<User | null>(null);
+        const handleSetFriend = (e: any) => {
+                if (friends) {
+                        const friendData = friends.find((friend) => friend.id === e.target.value)
+                        setValue('friendId', e.target.value)
+                        setSplitWith(friendData as User)
+                }
+        }
+
+        const submitting = (data: any) => {
+                handleAddExpense(data as addExpense, user)
+                setUpdateContext(true)
+                setOpenModal(false)
+        }
         return (
                 <div className='container'>
-                        <form onSubmit={handleSubmit((data) => handleAddExpense(data as Expense))}>
-                                <label htmlFor="name">name: </label>
-                                <input defaultValue="carrots" {...register('name')} />
+                        <form onSubmit={handleSubmit((data) => submitting(data))}>
+                                <label htmlFor="friend">Friend: </label>
+                                <select onChange={(e) => handleSetFriend(e)} name="fiendsList" id="friendsList">
+                                        <option value="hi">Select a friend</option>
+                                        {friends?.map((friend, idx) => <option key={idx} value={friend.id} >{friend.username}</option>)}
+                                </select>
+                                <br />
+                                <label htmlFor="name">Purchase Name: </label>
+                                <input required {...register('name')} />
                                 <br />
                                 <label htmlFor="type">type: </label>
-                                <input defaultValue="grocery" {...register('type')} />
-                                <br />
-                                <select name="paidBy" id="lenderOrOwer">
-                                        <option value="lender">lender</option>
-                                        <option value="ower">ower</option>
+                                <select required id="type" {...register('type')}>
+                                        {itemTypes.map((item, idx) => {
+                                                return <option key={idx} defaultValue={item} >{item}</option>
+                                        })}
                                 </select>
-                                <input defaultValue="f2c62dce-af40-4dbc-ae27-99a0bc6e20fb" {...register('lender')} />
-                                <input defaultValue="d39a1198-93ad-4a44-8483-46a2b6955f77" {...register('ower')} />
-                                <select name="lenderOwer" id="">
+                                <br />
+                                <label htmlFor="quantity">Price ($): </label>
+                                <input {...register('quantity')} required type="number" min="0.01" step="0.01" />
+                                <br />
+                                <label htmlFor="purchasedBy">Purchased by: </label>
+                                <select {...register('purchasedBy')} id="lenderOrOwer" required>
+                                        <option selected value={user.id}>Myself</option>
+                                        {splitWith !== null ? <option value={splitWith.id}>{splitWith.username}</option> : <></>}
+                                </select>
+                                <label htmlFor="splitPercentage"> Taking on: </label>
+                                <select defaultValue={'50'} required {...register('splitPercentage')} id="splitPercentage">
+                                        <option value="50">50%</option>
+                                        <option value="100">100%</option>
 
                                 </select>
-                                <input defaultValue="12.56" {...register('quantity')} />
-                                <input type="submit" />
+                                <br />
+                                <input disabled={!splitWith} type="submit" />
                         </form >
                 </div>
         );
 }
 
 export default TestModal;
+
+// const FriendOption = ({ friend, setSplitWith, selected, setSelected }: { setSelected: any, friend: User, setSplitWith: React.Dispatch<React.SetStateAction<User | null>>, selected: boolean }) => {
+//         if (selected) {
+//                 setSplitWith(friend)
+
+//         }
+//         return <option value={friend.id} >{friend.username}xxx</option>
+// }

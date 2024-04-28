@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../utils/supabase';
 import { handleGetUser, handleLogout, handleUserSession } from '../utils/loginHelpers';
-import { Profile, User } from '../utils/types';
+import { Profile, User } from '../types';
 import { useContext } from 'react';
 import { UserContext, UserContextType } from '../context/userContext';
 

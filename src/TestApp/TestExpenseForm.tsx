@@ -5,8 +5,8 @@ import TestModal from './TestModal';
 
 function TestAddExpenseForm() {
     const { user } = useContext(UserContext) as UserContextType;
-    const [friends, setFriends] = useState<any>();
-    const [openModal, setOpenModal] = useState<any>(false);
+    const [_friends, setFriends] = useState<any>();
+    const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
         async function fetchFriends() {
@@ -18,15 +18,10 @@ function TestAddExpenseForm() {
 
     return (
         <>
+            <h1>Add Expense: </h1>
+            <button onClick={() => openModal ? setOpenModal(false) : setOpenModal(true)} >Add Expense</button>
             <hr></hr>
-            <h1>Friends: </h1>
-            {
-                friends?.map((friend: any) => {
-                    return <button onClick={() => openModal ? setOpenModal(false) : setOpenModal(friend)} key={friend.id}>{friend.username}</button>
-                })
-            }
-            <hr></hr>
-            {openModal && <TestModal friend={openModal} />}
+            {openModal && <TestModal setOpenModal={setOpenModal} />}
         </>
     );
 }

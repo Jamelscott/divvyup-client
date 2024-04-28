@@ -2,6 +2,7 @@ export type User = {
     id: string,
     username: string,
     email: string,
+    expenses: Expense[]
 }
 
 export type UserSignUp = {
@@ -25,10 +26,16 @@ export type Expense = {
     id: string,
     name: string,
     type: ExpenseType,
-    lender: User, // Id of lender
-    ower: User, // Id of ower,
+    splitPercentage: number,
+    purchasedBy: string,
     quantity: number,
     date: Date,
+    ower: string,
+    lender: string
+}
+
+export type addExpense = Expense & {
+    friendId: string
 }
 
 export type ExpenseType = 'Entertainment' | 'Food and Drink' | 'Home' | 'Transportation' | 'Life' | 'Utility'

@@ -1,5 +1,5 @@
 import { supabase } from '../../utils/supabase';
-import { UserLogin, UserSignUp, SignUpError, User } from './types';
+import { UserLogin, UserSignUp, SignUpError, User } from '../types';
 import { User as supaUser } from '@supabase/supabase-js';
 
 const nullUser = {

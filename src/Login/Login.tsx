@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
 import { loginEmailOrUsername } from '../utils/loginHelpers';
-import { UserLogin } from '../utils/types';
+import { UserLogin } from '../types';
 import { UserContext, UserContextType } from '../context/userContext';
 
 function Login() {

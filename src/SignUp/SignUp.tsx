@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import { supabase } from '../../utils/supabase';
 import './signup.css';
-import { UserSignUp } from '../utils/types';
+import { UserSignUp } from '../types';
 import { userBuilder } from '../utils/loginHelpers';
 import { UserContext, UserContextType } from '../context/userContext';
 

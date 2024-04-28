@@ -1,7 +1,16 @@
 import { supabase } from '../../utils/supabase';
-import { FriendRequest, User } from './types';
+import { Expense, FriendRequest, User } from '../types';
 
-export const handleRequestFriend = async (usernameOrEmail: string, user: User): Promise<boolean | undefined> => {
+type friendOwingDiff = {
+    yourSpent: number,
+    friendSpent: number,
+    yourPayments: Expense[],
+    friendPayments: Expense[]
+    totalSpent: number;
+    friendUsername: string,
+}
+
+export const handleRequestFriend = async (usernameOrEmail: string, user: User): Promise<any> => {
     const isEmail = usernameOrEmail.includes('@');
     const { id: userId, username } = user;
 
@@ -11,16 +20,21 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User): 
                 .from('profiles')
                 .select('*')
                 .eq('email', usernameOrEmail);
-            if (newFriend.error) throw new Error(`error finding friend profile with email: ${newFriend.error}`);
+            if (newFriend.error) return { error: `error finding friend profile with email: ${newFriend.error}` }
+            if (newFriend.data[0].id === userId) return { error: `you can't add yourself silly` }
+            // throw new Error(`error finding friend profile with email: ${newFriend.error}`);
             if (newFriend.data) {
-                const { error } = await supabase
+                const { data, error } = await supabase
                     .from('friends')
                     .insert([
                         { type: 'pending', user_one_uuid: userId, user_two_uuid: newFriend.data[0].id, user_one_username: username, user_two_username: newFriend.data[0].username },
                     ])
                     .select();
-                if (error) throw new Error(`error inserting friend: ${error}`);
-                return true;
+                if (error) {
+                    return { error: `error inserting friend: ${error}` };
+                    // throw new Error(`error inserting friend: ${error}`);
+                }
+                return data;
             }
         } catch (error) {
             throw new Error(`Error: ${error}`);
@@ -31,9 +45,11 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User): 
                 .from('profiles')
                 .select('*')
                 .eq('username', usernameOrEmail);
-            if (newFriend.error) throw new Error(`error finding friend profile with username: ${newFriend.error}`);
+            if (newFriend.error) return `error finding friend profile with username: ${newFriend.error}`
+            if (newFriend.data[0].id === userId) return { error: `you can't add yourself silly` }
+            // throw new Error(`error finding friend profile with username: ${newFriend.error}`);
             if (newFriend.data) {
-                const { error } = await supabase
+                const { data, error } = await supabase
                     .from('friends')
                     .insert([
                         {
@@ -47,12 +63,13 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User): 
                     .select();
                 if (error) {
                     if (error.code === '23505') {
-                        console.log('friend request pending or youre already friends');
-                        return;
+                        return { error: `friend request pending or youre already friends` }
+                        // throw new Error(`friend request pending or youre already friends`);;
                     }
-                    throw new Error(`error inserting friend: ${error}`);
+                    return { error: `error inserting friend: ${error}` }
+                    // throw new Error(`error inserting friend: ${error}`);
                 }
-                return true;
+                return data;
             }
         } catch (error) {
             throw new Error(`Error: ${error}`);
@@ -133,3 +150,37 @@ export const getFriends = async (userId: string) => {
     }
     return friends;
 };
+
+export const getProfile = async (profileId: string) => {
+    let { data: profile, error } = await supabase
+        .from('profiles')
+        .select(profileId)
+    if (error) throw new Error('user not found')
+    return profile
+}
+
+export const friendOwingDiff = (user: User, expenses: Expense[], friend: User): friendOwingDiff => {
+    const friendExpenses = expenses.reduce((acc: any, curr: any) => {
+        if (curr.lender === user.id) {
+            acc.yourPayments.push(curr)
+            const paymentPercentage = (curr.splitpercentage / 100) * curr.quantity;
+            acc.yourSpent += paymentPercentage
+            acc.totalSpent += curr.quantity
+        } else if (curr.lender === friend.id) {
+            acc.friendPayments.push(curr)
+            const paymentPercentage = (curr.splitpercentage / 100) * curr.quantity;
+            acc.friendSpent += paymentPercentage
+            acc.totalSpent += curr.quantity
+        }
+        return acc;
+    }, {
+        friendUsername: friend.username,
+        yourSpent: 0,
+        yourPayments: [],
+        friendSpent: 0,
+        friendPayments: [],
+        totalSpent: 0
+    })
+
+    return friendExpenses
+}
