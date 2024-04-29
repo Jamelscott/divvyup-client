@@ -8,19 +8,26 @@ function FriendsList() {
                 <div>
                         <hr />
                         <h2>Friends List</h2>
-                        {friends?.map((friend) => {
+                        {friends?.map((friend, idx) => {
                                 const friendDiff = friendOwingDiff(user, expenses, friend)
-                                console.log('friendDiff: ', friendDiff)
-                                const green = friendDiff.yourSpent > friendDiff.friendSpent
+                                console.log(friendDiff)
+                                const noExpenses = friendDiff.totalSpent === 0
+                                const youSpentMore = friendDiff.yourSpent > friendDiff.friendSpent
+                                const friendSpentMore = friendDiff.friendSpent > friendDiff.yourSpent
 
                                 return (
-                                        <>
-                                                <h4>{friend.username}</h4>
-                                                <h3>{friendDiff.yourSpent}</h3>
-                                        </>
+                                        <div key={idx}>
+                                                <h4>{friend.username}
+                                                        <span style={{ color: noExpenses ? 'black' : youSpentMore ? 'green' : 'red' }}>{noExpenses ? ' is square with you' : youSpentMore ? ' owes you' : ' lent you'}</span>
+                                                        {' '}
+
+                                                        {!noExpenses && youSpentMore ? friendDiff.yourSpent : !noExpenses && friendSpentMore ? friendDiff.friendSpent : ''}
+                                                </h4>
+                                                {/* <h3 style={{ color: green ? 'green' : 'red' }}>{friendDiff.yourSpent}</h3> */}
+                                        </div>
                                 )
                         })}
-                </div>
+                </div >
         );
 }
 

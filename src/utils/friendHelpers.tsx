@@ -161,6 +161,7 @@ export const getProfile = async (profileId: string) => {
 
 export const friendOwingDiff = (user: User, expenses: Expense[], friend: User): friendOwingDiff => {
     const friendExpenses = expenses.reduce((acc: any, curr: any) => {
+        if ((curr.lender === user.id && curr.ower !== friend.id) || (curr.lender !== friend.id && curr.ower === user.id)) return acc
         if (curr.lender === user.id) {
             acc.yourPayments.push(curr)
             const paymentPercentage = (curr.splitpercentage / 100) * curr.quantity;
@@ -183,4 +184,8 @@ export const friendOwingDiff = (user: User, expenses: Expense[], friend: User): 
     })
 
     return friendExpenses
+}
+
+export const getLocalFriend = (friendId: string, friends: User[]) => {
+    return friends.find((friend) => friendId === friend.id) ?? null
 }

@@ -9,6 +9,7 @@ function TestExpenses() {
                 <div style={{ height: '800px', overflowY: "scroll", border: '1px solid black', padding: '15px 15px' }}>
                         <br />
                         {expenses?.map((expense: any, i) => {
+                                console.log(expenses)
                                 return <TestExpense key={`${expense} ${i}`} expense={expense} />
                         })}
                 </div>

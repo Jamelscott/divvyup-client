@@ -2,7 +2,7 @@ export type User = {
     id: string,
     username: string,
     email: string,
-    expenses: Expense[]
+    expenses: Expense[] | null
 }
 
 export type UserSignUp = {

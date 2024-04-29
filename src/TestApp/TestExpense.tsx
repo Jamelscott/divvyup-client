@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { priceParser, youOweThem } from "../utils/expenseHelpers";
 import { UserContext, UserContextType } from "../context/userContext";
 import { Expense } from "../types";
+import { getLocalFriend } from "../utils/friendHelpers";
 
 function TestExpense({ expense }: { expense: Expense }) {
         const { user, friends } = useContext(UserContext) as UserContextType;
@@ -13,6 +14,7 @@ function TestExpense({ expense }: { expense: Expense }) {
                         <p>Type: {expense.type}</p>
                         {friendName && <p>Friend: {friendName.username}</p>}
                         <p style={{ color: positive ? 'green' : 'red' }}>Amount: {!positive && '-'}{priceParser(expense)}</p>
+                        <p>Paid By: {friends && getLocalFriend(expense.lender, friends)?.username || 'Me'}</p>
                         <hr />
                 </div>
         );

@@ -1,5 +1,5 @@
 import { supabase } from '../../utils/supabase';
-import { User, addExpense } from '../types';
+import { Expense, User, addExpense } from '../types';
 
 export const itemTypes = [
     'Misc',
@@ -45,7 +45,6 @@ export const handleFetchSingleProfileExpenses = async (id: string) => {
         .from('expenses')
         .select('*')
         .or(`ower.eq.${id},lender.eq.${id}`);
-    console.log(data)
     const sortByDate = data?.sort((expenseA, expenseB) => new Date(expenseA.createdAt).getTime() - new Date(expenseB.createdAt).getTime())
     if (error) {
         console.log(error);
@@ -70,9 +69,14 @@ export const priceParser = (expense: any) => {
 
     return (expense.quantity / splitBy).toFixed(2)
 }
-export const youOweThem = (expense: any, userId: any) => {
+export const youOweThem = (expense: Expense, userId: string) => {
     // let userIsLender: boolean;
-    if (userId !== expense.lender && userId !== expense.ower) throw new Error("expense doesn't belong to user")
+    if (!expense || !userId) return
+    if (userId !== expense.lender) if (userId !== expense.ower) {
+        console.log('hi')
+        return
+    }
+
     if (userId !== expense.lender) {
         return true
     } else {
