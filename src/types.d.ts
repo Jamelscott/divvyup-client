@@ -26,7 +26,7 @@ export type Expense = {
     id: string,
     name: string,
     type: ExpenseType,
-    splitPercentage: number,
+    splitpercentage: number,
     purchasedBy: string,
     quantity: number,
     date: Date,

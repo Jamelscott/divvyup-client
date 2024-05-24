@@ -12,14 +12,14 @@ export const itemTypes = [
 ]
 
 export const handleAddExpense = async (expense: addExpense, user: User) => {
-    const { purchasedBy, quantity, splitPercentage, name, type, friendId } = expense;
+    const { purchasedBy, quantity, splitpercentage, name, type, friendId } = expense;
     const newExpense = {
         name: name,
         type: type,
         lender: purchasedBy,
         ower: purchasedBy === user.id ? friendId : user.id,
         quantity: quantity,
-        splitpercentage: splitPercentage,
+        splitpercentage: splitpercentage,
     }
     console.log(newExpense)
     const { data, error } = await supabase
@@ -52,7 +52,7 @@ export const handleFetchSingleProfileExpenses = async (id: string) => {
     return sortByDate;
 };
 
-export const priceParser = (expense: any) => {
+export const priceParser = (expense: Expense) => {
     const { splitpercentage: splitString } = expense;
     let splitBy: number;
 
@@ -76,10 +76,18 @@ export const youOweThem = (expense: Expense, userId: string) => {
         console.log('hi')
         return
     }
-
     if (userId !== expense.lender) {
         return true
     } else {
         return false
     }
+}
+
+export const calcTotalExpenseDiff = (expenses: Expense[], user: User) => {
+    let total = 0;
+    expenses.forEach((expense) => {
+        if (expense.lender === user.id) total += Number(priceParser(expense))
+        if (expense.ower === user.id) total -= Number(priceParser(expense))
+    })
+    return total
 }

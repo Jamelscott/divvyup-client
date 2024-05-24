@@ -117,6 +117,7 @@ export const rejectFriendRequest = async (requestId: string) => {
 };
 
 export const getFriends = async (userId: string) => {
+
     const { data: friendships, error } = await supabase
         .from('friends')
         .select('*')
@@ -130,9 +131,9 @@ export const getFriends = async (userId: string) => {
 
     if (friendships && friendships.length > 0) {
         friendIds = friendships.map((friend) => {
-            if (friend.requester_uuid === userId) {
+            if (friend.requester_uuid === userId && friend.requester_uuid !== friend.id) {
                 return friend.requestee_uuid
-            } else if (friend.requestee_uuid === userId) {
+            } else if (friend.requestee_uuid === userId && friend.requestee_uuid !== friend.id) {
                 return friend.requester_uuid
             } else {
                 throw new Error('user id not found.')

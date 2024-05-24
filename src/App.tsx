@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Login from './Login/Login';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import SignUp from './SignUp/SignUp.tsx';
-import Navbar from './Navbar/Navbar.tsx';
+import Navbar from './components/Navbar/Navbar.tsx';
 import TestApp from './TestApp/TestApp.tsx';
 import { Expense, FriendRequest, User } from './types';
 import { handleUserSession } from './utils/loginHelpers.tsx';
@@ -10,6 +10,10 @@ import { UserContext } from './context/userContext';
 import { getFriendRequests, getFriends } from './utils/friendHelpers.tsx';
 import { handleFetchSingleProfileExpenses } from './utils/expenseHelpers.tsx';
 import ErrorMsg from './Error/ErrorMsg.tsx';
+import Analytics from './components/Analytics/Analytics.tsx';
+import Profile from './components/Profile/Profile.tsx';
+import Friends from './components/Friends/Friends.tsx';
+
 
 function App() {
     const [user, setUser] = useState<User>(handleUserSession());
@@ -53,17 +57,21 @@ function App() {
         errorMsgs: errorMsg,
         setErrorMsgs: setErrorMsg,
     }
-
     return (
         <UserContext.Provider value={userData}>
             <BrowserRouter>
-                <Navbar />
-                {errorMsg.length > 0 && <ErrorMsg />}
-                <Routes>
-                    <Route path='/' element={<TestApp />} />
-                    <Route path='/login' element={<Login />} />
-                    <Route path='/signup' element={<SignUp />} />
-                </Routes>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    {user.username && <Navbar />}
+                    {errorMsg.length > 0 && <ErrorMsg />}
+                    <Routes>
+                        <Route path='/' element={<TestApp />} />
+                        <Route path='/analytics' element={<Analytics />} />
+                        <Route path='/profile' element={<Profile />} />
+                        <Route path='/friends' element={<Friends />} />
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/signup' element={<SignUp />} />
+                    </Routes>
+                </div>
             </BrowserRouter>
         </UserContext.Provider>
     );

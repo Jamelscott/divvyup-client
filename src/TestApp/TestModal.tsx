@@ -49,8 +49,8 @@ function TestModal({ setOpenModal }: { setOpenModal: React.Dispatch<React.SetSta
                                         <option selected value={user.id}>Myself</option>
                                         {splitWith !== null ? <option value={splitWith.id}>{splitWith.username}</option> : <></>}
                                 </select>
-                                <label htmlFor="splitPercentage"> Taking on: </label>
-                                <select defaultValue={'50'} required {...register('splitPercentage')} id="splitPercentage">
+                                <label htmlFor="splitpercentage"> Taking on: </label>
+                                <select defaultValue={'50'} required {...register('splitpercentage')} id="splitpercentage">
                                         <option value="50">50%</option>
                                         <option value="100">100%</option>
 
@@ -63,11 +63,3 @@ function TestModal({ setOpenModal }: { setOpenModal: React.Dispatch<React.SetSta
 }
 
 export default TestModal;
-
-// const FriendOption = ({ friend, setSplitWith, selected, setSelected }: { setSelected: any, friend: User, setSplitWith: React.Dispatch<React.SetStateAction<User | null>>, selected: boolean }) => {
-//         if (selected) {
-//                 setSplitWith(friend)
-
-//         }
-//         return <option value={friend.id} >{friend.username}xxx</option>
-// }

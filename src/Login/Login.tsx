@@ -6,7 +6,7 @@ import { UserLogin } from '../types';
 import { UserContext, UserContextType } from '../context/userContext';
 
 function Login() {
-    const { user, setUser } = useContext(UserContext) as UserContextType;
+    const { user, setUser, setUpdateContext } = useContext(UserContext) as UserContextType;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,6 +27,7 @@ function Login() {
             if (!loggedUser) throw new Error('logged in user not found');
 
             if (loggedUser.username !== null) {
+                setUpdateContext(true)
                 setUser(loggedUser);
                 console.log('logged in', loggedUser);
                 navigate('/');

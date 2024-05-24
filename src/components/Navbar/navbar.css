@@ -1,0 +1,27 @@
+.nav-container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items:  center;
+        background-color: #3A3939;
+        min-width: 130px;
+        height: 100vh;
+}
+.nav-icon-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+}
+.nav-icon-container:hover {
+        background-color: rgba(255, 0, 0, 0.11);
+}
+.nav-icon-container:active {
+        background-color: rgba(255, 0, 0, 0.41);
+}
+
+.nav-icon-container-selected {
+        border-left: 5px solid red;
+        background-color: rgba(255, 0, 0, 0.11);
+}
