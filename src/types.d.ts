@@ -2,7 +2,8 @@ export type User = {
     id: string,
     username: string,
     email: string,
-    expenses: Expense[] | null
+    expenses: Expense[] | null,
+    photo: string,
 }
 
 export type UserSignUp = {
@@ -22,7 +23,7 @@ export type UserLogin = {
 }
 
 
-export type Expense = {
+export type ExpenseData = {
     id: string,
     name: string,
     type: ExpenseType,
@@ -32,13 +33,14 @@ export type Expense = {
     date: Date,
     ower: string,
     lender: string
+    createdAt: Date;
 }
 
 export type addExpense = Expense & {
     friendId: string
 }
 
-export type ExpenseType = 'Entertainment' | 'Food and Drink' | 'Home' | 'Transportation' | 'Life' | 'Utility'
+export type ExpenseType = 'dining out' | 'grocery' | 'household' | 'misc' | 'mortgage' | 'pet' | 'rent'
 
 export type FriendRequest = {
     id: string,

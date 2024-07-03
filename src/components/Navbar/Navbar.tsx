@@ -4,11 +4,11 @@ import { User } from '../../types';
 import { useContext, useState } from 'react';
 import { UserContext, UserContextType } from '../../context/userContext';
 import './navbar.css'
-import analyticsIcon from '../../../assets/analytics-icon.svg'
-import friendsIcon from '../../../assets/friends-icon.svg'
-import homeIcon from '../../../assets/home-icon.svg'
-import profileIcon from '../../../assets/profile-icon.svg'
-import logoutIcon from '../../../assets/logout-icon.svg'
+import analyticsIcon from '../../../assets/navbarIcons/analytics-icon.svg'
+import friendsIcon from '../../../assets/navbarIcons/friends-icon.svg'
+import homeIcon from '../../../assets/navbarIcons/home-icon.svg'
+import profileIcon from '../../../assets/navbarIcons/profile-icon.svg'
+import logoutIcon from '../../../assets/navbarIcons/logout-icon.svg'
 
 const navOptions = [
     {
@@ -18,15 +18,15 @@ const navOptions = [
         active: false
     },
     {
-        id: 'profile',
-        image: profileIcon,
-        route: '/profile',
-        active: false
-    },
-    {
         id: 'friends',
         image: friendsIcon,
         route: '/friends',
+        active: false
+    },
+    {
+        id: 'profile',
+        image: profileIcon,
+        route: '/profile',
         active: false
     },
     {
@@ -67,8 +67,8 @@ function Navbar() {
                 navigate(`${option.route}`)
             }
         }
-        return <div key={option.id} id={`${option.id}-container`} className={`nav-icon-container ${selected === option.route && 'nav-icon-container-selected'}`}>
-            <img onClick={handleOnClick} src={option.image} alt={`${option.id}-button`} />
+        return <div onClick={handleOnClick} key={option.id} id={`${option.id}-container`} className={`nav-icon-container ${selected === option.route && 'nav-icon-container-selected'}`}>
+            <img src={option.image} alt={`${option.id}-button`} />
         </div>
     })
 

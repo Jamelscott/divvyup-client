@@ -1,15 +1,15 @@
 import FriendsList from './components/FriendsList';
-import FriendSideBar from './components/FriendSideBar';
 import FriendRequestForm from './components/FriendRequestForm';
 import './friends.css'
+import SideBar from '../Sidebar/Sidebar';
+import FriendSideBar from './components/FriendSideBar';
 function Friends() {
         return (
                 <div className='friends-container'>
                         <div>
-                                <FriendRequestForm />
                                 <FriendsList />
                         </div>
-                        <FriendSideBar />
+                        <SideBar sideBarComponent={<FriendSideBar />} />
                 </div>
         );
 }

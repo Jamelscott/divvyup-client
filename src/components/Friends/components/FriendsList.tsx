@@ -21,6 +21,9 @@ function FriendsList() {
                                                         {' $'}
                                                         {!noExpenses && youSpentMore ? friendDiff.yourSpent - friendDiff.friendSpent : !noExpenses && friendSpentMore ? friendDiff.friendSpent - friendDiff.yourSpent : ''}
                                                 </h4>
+                                                <input type="button" value="see expenses" />
+                                                <input type="button" value="settle up" />
+                                                <input type="button" value="remove friend" />
                                         </div>
                                 )
                         })}

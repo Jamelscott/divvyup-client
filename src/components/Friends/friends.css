@@ -2,13 +2,15 @@
         display: flex;
         justify-content: space-between;
         width: 100%;
+        padding-left: 20px;
 }
-.side-bar-container {
+.friends-side-bar-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
         background-color: bisque;
         height: 100vh;
-        /* width: 300px; */
+        width: 100%;
+        padding: 10px;
 }

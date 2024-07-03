@@ -1,18 +1,22 @@
 import { useContext } from "react";
 import { UserContext, UserContextType } from "../context/userContext";
-import TestExpense from "./TestExpense";
+import ExpenseData from "../components/Expenses/Expense";
+import { AdvancedImage } from '@cloudinary/react';
 
 function TestExpenses() {
-        const { expenses } = useContext(UserContext) as UserContextType;
-
-        return (
-                <div style={{ height: '800px', overflowY: "scroll", border: '1px solid black', padding: '15px 15px' }}>
-                        <br />
-                        {expenses?.map((expense: any, i) => {
-                                return <TestExpense key={`${expense} ${i}`} expense={expense} />
-                        })}
-                </div>
-        );
+	const { expenses } = useContext(UserContext) as UserContextType;
+	return (
+		<div style={{ display: 'flex', flexDirection: 'column' }}>
+			<h3>Recent Expenses</h3>
+			<div style={{ height: '700px', overflowY: "scroll", padding: '15px 15px' }}>
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+					{expenses?.map((expense: any, i) => {
+						return <ExpenseData key={`${expense} ${i}`} expense={expense} />
+					})}
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default TestExpenses;

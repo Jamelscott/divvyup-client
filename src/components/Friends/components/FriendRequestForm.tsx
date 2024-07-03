@@ -9,10 +9,14 @@ function FriendRequestForm() {
         const { register, handleSubmit } = useForm();
 
         const submitFriendRequest = async (data: string, user: User) => {
-                const tryRequest = await handleRequestFriend(data, user)
-                if (tryRequest.error) {
-                        if (errorMsgs.includes(tryRequest.error)) return
-                        return setErrorMsgs([...errorMsgs, tryRequest.error])
+                let tryRequest;
+                try {
+                        tryRequest = await handleRequestFriend(data, user)
+                } catch (err: any) {
+                        if (errorMsgs.includes(err.message)) return
+                        return setErrorMsgs([...errorMsgs, 'user not found, try a different email or username'])
+                } finally {
+                        if (tryRequest.error) return setErrorMsgs([...errorMsgs, tryRequest.error])
                 }
                 setFriendRequests([...friendRequests, tryRequest])
                 setUpdateContext(true)
@@ -20,7 +24,7 @@ function FriendRequestForm() {
 
         return (
                 <form onSubmit={handleSubmit((data) => submitFriendRequest(data.emailOrUsername, user))}>
-                        <input required {...register('emailOrUsername')} />
+                        <input placeholder="email or username" type="text" required {...register('emailOrUsername')} />
                         <input type="submit" value="add Friend" />
                 </form>
         );

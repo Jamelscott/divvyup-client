@@ -1,6 +1,5 @@
-import { supabase } from '../../utils/supabase';
+import { supabase } from '../supabase';
 import { UserLogin, UserSignUp, SignUpError, User } from '../types';
-import { User as supaUser } from '@supabase/supabase-js';
 
 const nullUser = {
     id: '',
@@ -29,7 +28,7 @@ export default async function signUp(signUpData: UserSignUp): Promise<User | Sig
     if (data.user.email === undefined) {
         throw new Error('user email not found, returning null from server');
     }
-    const signedInUser = userBuilder(data.user);
+    const signedInUser = userBuilder(data.user as any);
     sessionStorage.setItem('user', JSON.stringify(signedInUser));
     return signedInUser;
 }
@@ -44,8 +43,14 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                 const response = await supabase.auth.signInWithPassword({ email: usernameOrEmail, password: password });
                 if (response.error) throw response.error;
                 if (response.data.user) {
-                    const signedInUser = userBuilder(response.data.user);
-                    sessionStorage.setItem('user', JSON.stringify(signedInUser));
+                    const { data: profile, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', response.data.user.id)
+                        .single()
+                    if (error) console.log(error)
+                    const signedInUser = userBuilder(profile);
+                    sessionStorage.setItem('user', JSON.stringify(profile));
                     return signedInUser;
                 }
             } catch (error) {
@@ -53,14 +58,20 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
             }
         } else {
             try {
-                const { data, error } = await supabase.from('profiles').select('email').eq('username', usernameOrEmail);
+                const { data, error } = await supabase.from('profiles').select().eq('username', usernameOrEmail);
                 if (error) throw error;
                 if (data) {
                     const response = await supabase.auth.signInWithPassword({ email: data[0].email, password: password });
                     if (response.error) throw response.error;
 
                     if (response.data.user) {
-                        const signedInUser = userBuilder(response.data.user);
+                        const { data: profile, error } = await supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', response.data.user.id)
+                            .single()
+                        if (error) console.log(error)
+                        const signedInUser = userBuilder(profile);
                         sessionStorage.setItem('user', JSON.stringify(signedInUser));
                         return signedInUser;
                     } else {
@@ -74,15 +85,15 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
     }
 }
 
-export function userBuilder(user: supaUser): User {
+export function userBuilder(user: User): User {
     if (!user.id) throw new Error('User data is empty?');
     if (user.email === undefined) throw new Error('User email data is undefined?');
-    const expenses = user.user_metadata.expenses ? [...user.user_metadata.expenses] : [];
     const builtUser: User = {
         id: user.id,
-        username: user.user_metadata.username,
+        username: user.username,
         email: user.email,
-        expenses: expenses
+        expenses: user.expenses || [],
+        photo: user.photo
     };
 
     return builtUser;
@@ -94,15 +105,19 @@ export const handleGetUser = async () => {
 };
 
 export const handleUserSession = () => {
-    const potentialUserString = sessionStorage.getItem('user');
-    const potentialUser = potentialUserString !== null ? JSON.parse(potentialUserString) : {
-        id: '',
-        username: '',
-        email: '',
-        expenses: []
-    };
+    const userString = sessionStorage.getItem('user');
+    if (userString === null) return;
+    const sessionUser = JSON.parse(userString)
+    return sessionUser;
+};
 
-    return potentialUser;
+export const handleUpdateUserSession = (newValues: {}): User => {
+    const userString = sessionStorage.getItem('user');
+    if (userString === null) throw new Error('user not initiated');
+    const parsedUser = JSON.parse(userString) as User
+    const updatedUser = { ...parsedUser, ...newValues }
+    sessionStorage.setItem('user', JSON.stringify(updatedUser));
+    return updatedUser
 };
 
 export const handleLogout = async () => {

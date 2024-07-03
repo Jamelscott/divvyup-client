@@ -4,3 +4,13 @@
     margin: 10px 0;
     font-size: 15px;
 }
+
+.list-container {
+    border: 1px solid black;
+    min-width: 400px;
+    margin: 50px auto;
+    background-color: #ec7f71;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.183);
+  }

@@ -1,11 +1,11 @@
-import { supabase } from '../../utils/supabase';
-import { Expense, FriendRequest, User } from '../types';
+import { supabase } from '../supabase';
+import { ExpenseData, FriendRequest, User } from '../types';
 
 type friendOwingDiff = {
     yourSpent: number,
     friendSpent: number,
-    yourPayments: Expense[],
-    friendPayments: Expense[]
+    yourPayments: ExpenseData[],
+    friendPayments: ExpenseData[]
     totalSpent: number;
     friendUsername: string,
 }
@@ -117,7 +117,6 @@ export const rejectFriendRequest = async (requestId: string) => {
 };
 
 export const getFriends = async (userId: string) => {
-
     const { data: friendships, error } = await supabase
         .from('friends')
         .select('*')
@@ -160,7 +159,7 @@ export const getProfile = async (profileId: string) => {
     return profile
 }
 
-export const friendOwingDiff = (user: User, expenses: Expense[], friend: User): friendOwingDiff => {
+export const friendOwingDiff = (user: User, expenses: ExpenseData[], friend: User): friendOwingDiff => {
     const friendExpenses = expenses.reduce((acc: any, curr: any) => {
         if ((curr.lender === user.id && curr.ower !== friend.id) || (curr.lender !== friend.id && curr.ower === user.id)) return acc
         if (curr.lender === user.id) {

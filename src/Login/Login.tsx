@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
 import { loginEmailOrUsername } from '../utils/loginHelpers';
@@ -6,12 +6,8 @@ import { UserLogin } from '../types';
 import { UserContext, UserContextType } from '../context/userContext';
 
 function Login() {
-    const { user, setUser, setUpdateContext } = useContext(UserContext) as UserContextType;
+    const { setUser, setUpdateContext } = useContext(UserContext) as UserContextType;
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (user.id) navigate('/');
-    }, [navigate, user.id]);
 
     const [msg, setMsg] = useState('');
     const [loginCreds, setLoginCreds] = useState<UserLogin>({
@@ -41,7 +37,7 @@ function Login() {
     };
 
     return (
-        <>
+        <div style={{ width: '100%' }}>
             <div
                 style={{
                     position: 'relative',
@@ -111,7 +107,7 @@ function Login() {
                 <p className="questionText">username: visitor </p>
                 <p className="questionText">password: visitor </p>
             </div>
-        </>
+        </div>
     );
 }
 

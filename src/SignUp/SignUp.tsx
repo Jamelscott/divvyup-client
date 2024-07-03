@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
-import { supabase } from '../../utils/supabase';
+import { supabase } from '../supabase';
 import './signup.css';
 import { UserSignUp } from '../types';
 import { userBuilder } from '../utils/loginHelpers';
@@ -64,7 +64,7 @@ function SignUp() {
                 throw new Error('user email not found, returning null from server');
             }
 
-            const newUser = userBuilder(data.user);
+            const newUser = userBuilder(data.user as any);
             setUser(newUser);
             console.log(newUser);
             navigate('/');

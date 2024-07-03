@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import SignUp from './SignUp/SignUp.tsx';
 import Navbar from './components/Navbar/Navbar.tsx';
 import TestApp from './TestApp/TestApp.tsx';
-import { Expense, FriendRequest, User } from './types';
+import { ExpenseData, FriendRequest, User } from './types';
 import { handleUserSession } from './utils/loginHelpers.tsx';
 import { UserContext } from './context/userContext';
 import { getFriendRequests, getFriends } from './utils/friendHelpers.tsx';
@@ -14,30 +14,31 @@ import Analytics from './components/Analytics/Analytics.tsx';
 import Profile from './components/Profile/Profile.tsx';
 import Friends from './components/Friends/Friends.tsx';
 
-
 function App() {
     const [user, setUser] = useState<User>(handleUserSession());
     const [friends, setFriends] = useState<User[]>([])
-    const [expenses, setExpenses] = useState<Expense[]>([])
-    const [updateContext, setUpdateContext] = useState<boolean>(false)
+    const [expenses, setExpenses] = useState<ExpenseData[]>([])
+    const [updateContext, setUpdateContext] = useState<boolean>(true)
     const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([])
     const [errorMsg, setErrorMsg] = useState<string[]>([])
 
     useEffect(() => {
-        const fetchFriends = async (userid: any) => {
-            const friendz = await getFriends(userid) as User[]
-            setFriends(friendz)
-            return friends
+        console.log('fetching')
+        if (!updateContext) return
+        const fetchFriends = async (userid: string) => {
+            const fetchedFriends = await getFriends(userid) as User[]
+            setFriends(fetchedFriends)
+            return fetchedFriends
         }
-        const fetchExpenses = async (userid: any) => {
-            const expensez = await handleFetchSingleProfileExpenses(userid) as Expense[]
-            setExpenses(expensez.reverse())
-            return friends
+        const fetchExpenses = async (userid: string) => {
+            const fetchedExpenses = await handleFetchSingleProfileExpenses(userid) as ExpenseData[]
+            setExpenses(fetchedExpenses.reverse())
+            return fetchedExpenses.reverse()
         }
-        const fetchFriendRequests = async (user: any) => {
-            const requestz = await getFriendRequests(user)
-            setFriendRequests(requestz)
-            return friends
+        const fetchFriendRequests = async (user: User) => {
+            const fetchedFriendRequests = await getFriendRequests(user)
+            setFriendRequests(fetchedFriendRequests)
+            return fetchedFriendRequests
         }
         fetchFriends(user.id)
         fetchFriendRequests(user)
@@ -61,10 +62,10 @@ function App() {
         <UserContext.Provider value={userData}>
             <BrowserRouter>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    {user.username && <Navbar />}
-                    {errorMsg.length > 0 && <ErrorMsg />}
+                    {user?.username && <Navbar />}
+                    {errorMsg?.length > 0 && <ErrorMsg />}
                     <Routes>
-                        <Route path='/' element={<TestApp />} />
+                        <Route path='/' element={user ? <TestApp /> : <Login />} />
                         <Route path='/analytics' element={<Analytics />} />
                         <Route path='/profile' element={<Profile />} />
                         <Route path='/friends' element={<Friends />} />
