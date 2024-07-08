@@ -9,6 +9,10 @@ import friendsIcon from '../../../assets/navbarIcons/friends-icon.svg'
 import homeIcon from '../../../assets/navbarIcons/home-icon.svg'
 import profileIcon from '../../../assets/navbarIcons/profile-icon.svg'
 import logoutIcon from '../../../assets/navbarIcons/logout-icon.svg'
+import { useDispatch, useSelector } from 'react-redux';
+import { DataState, logoutUser, selectUser, selectUserState } from '../../slices/userSlice';
+import { AppDispatch } from '../../utils/store';
+import { expireFriends } from '../../slices/friendsSlice';
 
 const navOptions = [
     {
@@ -45,23 +49,25 @@ const navOptions = [
 
 
 function Navbar() {
-    const { user, setUser } = useContext(UserContext) as UserContextType;
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch<AppDispatch>()
     const [selected, setSelected] = useState<string>(location.pathname)
 
-    const logout = async (): Promise<User> => {
-        const error = await handleLogout();
-        if (error) throw new Error(`error logging in: ${error}`);
-        navigate('/login');
+    const logout = async () => {
+        await dispatch(logoutUser())
+        dispatch(expireFriends())
+        navigate('/login')
         console.log('user logged out');
-        return handleUserSession();
+        return
     };
 
     const options = navOptions.map((option) => {
         const handleOnClick = () => {
             if (option.id === 'logout') {
-                return (async () => setUser(await logout()))()
+                (async () => logout())()
+                navigate('/')
+                return
             } else {
                 setSelected(option.route as string)
                 navigate(`${option.route}`)

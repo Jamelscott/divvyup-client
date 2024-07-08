@@ -1,18 +1,17 @@
-import { useContext, useState } from "react";
-import { acceptFriendRequest, rejectFriendRequest } from "../../../utils/friendHelpers";
-import { UserContext, UserContextType } from "../../../context/userContext";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../../../slices/userSlice";
+import { approveFriendRequest, rejectFriendRequest, selectFriendRequests } from "../../../slices/friendsSlice";
+import { AppDispatch } from "../../../utils/store";
 
 function FriendRequests() {
-        const { user, setUpdateContext, friendRequests } = useContext(UserContext) as UserContextType;
-        const [friendRequestz, setFriendRequestz] = useState(friendRequests)
-
+        const user = useSelector(selectUser)
+        const friendRequests = useSelector(selectFriendRequests)
+        const dispatch = useDispatch<AppDispatch>()
         const handleRejectRequest = (requestId: string) => {
-                rejectFriendRequest(requestId)
-                setUpdateContext(true)
+                dispatch(rejectFriendRequest(requestId))
         }
         const handleAcceptRequest = (id: string) => {
-                acceptFriendRequest(id)
-                setUpdateContext(true)
+                dispatch(approveFriendRequest(id))
         }
         return <div className='friend-request-container'>
                 <p><b>Friend Requests</b></p>

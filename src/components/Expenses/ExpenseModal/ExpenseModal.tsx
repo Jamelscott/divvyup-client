@@ -1,18 +1,21 @@
 import { useForm } from 'react-hook-form';
 import './expenseModal.css'
-import { editExpense, handleAddExpense } from '../../../utils/expenseHelpers';
-import { ExpenseData, User, addExpense } from '../../../types';
-import { useContext, useState } from 'react';
-import { UserContext, UserContextType } from '../../../context/userContext';
+import { ExpenseData, User, AddExpense } from '../../../types';
+import { useState } from 'react';
 import { itemTypes } from '../../../utils/expenseHelpers';
-import EditExpense from './EditExpense/EditExpense';
+import { useDispatch, useSelector } from 'react-redux';
+import { postExpense, selectUser } from '../../../slices/userSlice';
+import { selectFriends } from '../../../slices/friendsSlice';
+import { AppDispatch } from '../../../utils/store';
 function ExpenseModal({
 	setOpenModal,
 }: {
 	setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
 	expenseData?: ExpenseData,
 }) {
-	const { user, friends, setUpdateContext } = useContext(UserContext) as UserContextType;
+	const user = useSelector(selectUser)
+	const friends = useSelector(selectFriends)
+	const dispatch = useDispatch<AppDispatch>()
 	const { register, handleSubmit, formState, getValues, setValue } = useForm({
 		defaultValues: {
 			lender: user.id,
@@ -24,15 +27,13 @@ function ExpenseModal({
 	});
 	const [transactionFriend, setTransactionFriend] = useState<User | null>(null)
 	const isDirty = !!Object.keys(formState.dirtyFields).length || formState.dirtyFields;
-	const [ower, setOwer] = useState<User | null>(null)
+	const [_ower, setOwer] = useState<User | null>(null)
 	const readyToSubmit = isDirty && transactionFriend && getValues().lender && getValues().quantity && getValues().splitpercentage && getValues().name && getValues().type
 
 	const submitting = (data: any) => {
-		handleAddExpense(data as addExpense, user, transactionFriend)
-		setUpdateContext(true)
+		dispatch(postExpense({ expenseData: data as AddExpense, user: user, transactionFriend: transactionFriend as User }))
 		setOpenModal(false)
 	}
-	console.log(getValues())
 	return (
 		<div className='container'>
 			<form onSubmit={handleSubmit((data) => submitting(data))}>

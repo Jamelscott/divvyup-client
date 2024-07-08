@@ -1,25 +1,17 @@
-import { useContext } from "react";
-import { UserContext, UserContextType } from "../../../context/userContext";
-import { handleRequestFriend } from "../../../utils/friendHelpers";
 import { useForm } from "react-hook-form";
 import { User } from "../../../types";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../../../slices/userSlice";
+import { postFriendRequest } from "../../../slices/friendsSlice";
+import { AppDispatch } from "../../../utils/store";
 
 function FriendRequestForm() {
-        const { user, setUpdateContext, friendRequests, setFriendRequests, errorMsgs, setErrorMsgs } = useContext(UserContext) as UserContextType;
+        const user = useSelector(selectUser)
+        const dispatch = useDispatch<AppDispatch>()
         const { register, handleSubmit } = useForm();
 
-        const submitFriendRequest = async (data: string, user: User) => {
-                let tryRequest;
-                try {
-                        tryRequest = await handleRequestFriend(data, user)
-                } catch (err: any) {
-                        if (errorMsgs.includes(err.message)) return
-                        return setErrorMsgs([...errorMsgs, 'user not found, try a different email or username'])
-                } finally {
-                        if (tryRequest.error) return setErrorMsgs([...errorMsgs, tryRequest.error])
-                }
-                setFriendRequests([...friendRequests, tryRequest])
-                setUpdateContext(true)
+        const submitFriendRequest = async (usernameOrEMail: string, user: User) => {
+                dispatch(postFriendRequest({ user: user, usernameOrEMail: usernameOrEMail }))
         }
 
         return (

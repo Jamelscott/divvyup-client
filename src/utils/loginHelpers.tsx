@@ -50,7 +50,6 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                         .single()
                     if (error) console.log(error)
                     const signedInUser = userBuilder(profile);
-                    sessionStorage.setItem('user', JSON.stringify(profile));
                     return signedInUser;
                 }
             } catch (error) {
@@ -72,7 +71,6 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                             .single()
                         if (error) console.log(error)
                         const signedInUser = userBuilder(profile);
-                        sessionStorage.setItem('user', JSON.stringify(signedInUser));
                         return signedInUser;
                     } else {
                         throw new Error('user not found - made a typo?');

@@ -1,8 +1,17 @@
+import { DataState } from "./slices/userSlice";
+
+export type GenericDataState<T> = {
+    data: T;
+    dataState: DataState;
+    error?: ErrorData;
+    expiration?: number;
+};
+
 export type User = {
     id: string,
     username: string,
     email: string,
-    expenses: Expense[] | null,
+    expenses: ExpenseData[],
     photo: string,
 }
 
@@ -36,11 +45,16 @@ export type ExpenseData = {
     createdAt: Date;
 }
 
-export type addExpense = Expense & {
+export type AddExpense = Expense & {
     friendId: string
 }
 
 export type ExpenseType = 'dining out' | 'grocery' | 'household' | 'misc' | 'mortgage' | 'pet' | 'rent'
+
+export type FriendSliceData = {
+    friendRequests: FriendRequest[],
+    friends: User[]
+}
 
 export type FriendRequest = {
     id: string,

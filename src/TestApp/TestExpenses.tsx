@@ -1,10 +1,9 @@
-import { useContext } from "react";
-import { UserContext, UserContextType } from "../context/userContext";
 import ExpenseData from "../components/Expenses/Expense";
-import { AdvancedImage } from '@cloudinary/react';
+import { useSelector } from "react-redux";
+import { selectExpenses } from "../slices/userSlice";
 
 function TestExpenses() {
-	const { expenses } = useContext(UserContext) as UserContextType;
+	const expenses = useSelector(selectExpenses)
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
 			<h3>Recent Expenses</h3>

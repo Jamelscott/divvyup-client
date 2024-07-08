@@ -16,6 +16,9 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 import { byRadius } from "@cloudinary/url-gen/actions/roundCorners";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../slices/userSlice";
+import { selectFriends } from "../../slices/friendsSlice";
 
 
 const expenseOptions = {
@@ -29,7 +32,8 @@ const expenseOptions = {
 }
 
 function Expense({ expense }: { expense: ExpenseData }) {
-    const { user, friends, setUpdateContext } = useContext(UserContext) as UserContextType;
+    const user = useSelector(selectUser)
+    const friends = useSelector(selectFriends)
     const friend = friends?.find((friend) => friend.id === expense.lender || friend.id === expense.ower)
     const negative = youOweThem(expense, user.id)
     const expenseIcon = expenseOptions[`${expense.type}`]
@@ -45,7 +49,6 @@ function Expense({ expense }: { expense: ExpenseData }) {
 
     // Instantiate a CloudinaryImage object for the image with the public ID, 'docs/models'.
     const myImage = cld.image(friend?.photo);
-    console.log(user)
 
     // Resize to 250 x 250 pixels using the 'fill' crop mode.
     myImage.resize(fill().width(40).height(40)).roundCorners(byRadius(100));
@@ -69,7 +72,6 @@ function Expense({ expense }: { expense: ExpenseData }) {
     }
     const handleDeleteExpense = () => {
         deleteExpense(expense, user)
-        setUpdateContext(true)
     }
     return (
         <>

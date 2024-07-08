@@ -1,20 +1,22 @@
-import { useContext, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext, UserContextType } from '../context/userContext';
-import TestExpenses from './TestExpenses';
-import { calcTotalExpenseDiff } from '../utils/expenseHelpers';
-import SideBar from '../components/Sidebar/Sidebar';
-import HomeSidebar from '../components/Home/HomeSidebar';
+import TestExpenses from '../../TestApp/TestExpenses';
+import { calcTotalExpenseDiff } from '../../utils/expenseHelpers';
+import SideBar from '../Sidebar/Sidebar';
+import HomeSidebar from './HomeSidebar';
+import { useDispatch, useSelector } from 'react-redux';
+import { DataState, selectExpenses, selectUser } from '../../slices/userSlice';
+import { getFriends, selectFriends, selectFriendsState } from '../../slices/friendsSlice';
+import { AppDispatch } from '../../utils/store';
 
-function TestApp() {
-    const { user, expenses } = useContext(UserContext) as UserContextType;
+function Home() {
+    const user = useSelector(selectUser)
+    const friends = useSelector(selectFriends)
+    const friendsDataState = useSelector(selectFriendsState)
+    const expenses = useSelector(selectExpenses)
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>()
     const expenseDiff = useMemo(() => calcTotalExpenseDiff(expenses, user), [expenses])
-    useEffect(() => {
-        if (!user || !user.id) {
-            navigate('/login');
-        }
-    }, [navigate]);
 
     const getTotalNum = (num: number) => {
         return Number(Math.round(parseFloat(Math.abs(num) + 'e' + 2)) + 'e-' + 2).toFixed(2);
@@ -44,4 +46,4 @@ function TestApp() {
     );
 }
 
-export default TestApp;
+export default Home;

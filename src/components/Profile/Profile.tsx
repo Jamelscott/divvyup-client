@@ -1,12 +1,13 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import UploadWidget from "../../utils/UploadWidget";
-import { UserContext, UserContextType } from "../../context/userContext";
 import { AdvancedImage } from "@cloudinary/react";
 import { Cloudinary } from "@cloudinary/url-gen/index";
 import { fill } from "@cloudinary/url-gen/actions/resize";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../slices/userSlice";
 
 function Profile() {
-	const { user } = useContext(UserContext) as UserContextType;
+	const user = useSelector(selectUser)
 	const [publicId, setPublicId] = useState(user.photo);
 	const [cloudName] = useState(import.meta.env.VITE_CLOUD_PROFILE);
 	const [uploadPreset] = useState("ml_default");

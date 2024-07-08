@@ -1,5 +1,5 @@
 import { supabase } from '../supabase';
-import { ExpenseData, User, addExpense } from '../types';
+import { ExpenseData, User, AddExpense } from '../types';
 
 export const itemTypes = [
     'misc',
@@ -11,7 +11,7 @@ export const itemTypes = [
     'dining out'
 ]
 
-export const handleAddExpense = async (expense: addExpense, user: User, friend: User | null) => {
+export const handleAddExpense = async (expense: AddExpense, user: User, friend: User | null): Promise<ExpenseData> => {
     if (!friend) throw new Error('need a friend to transact with')
     const { lender: lenderId, quantity, splitpercentage, name, type } = expense;
     const ower = user.id === lenderId ? friend.id : user.id
@@ -24,22 +24,14 @@ export const handleAddExpense = async (expense: addExpense, user: User, friend: 
         splitpercentage: Number(splitpercentage),
     }
     console.log(newExpense)
-    const { data, error } = await supabase
+    const { data, error }: any = await supabase
         .from('expenses')
         .insert([newExpense])
         .select();
     if (error) {
-        if (error?.code === '42501') {
-            console.log(error, 'cannot add expense to other users');
-            return false
-        } else {
-            console.log(error);
-            return false
-        }
-    } else {
-        console.log(data);
-        return true
+        throw new Error('error')
     }
+    return data
 };
 // dummy data: 'ower.eq.0ae9db38-6f02-4ebd-8552-f5632daccce3,lender.eq.0ae9db38-6f02-4ebd-8552-f5632daccce3'
 export const handleFetchSingleProfileExpenses = async (id: string) => {

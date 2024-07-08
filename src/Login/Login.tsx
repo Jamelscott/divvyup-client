@@ -1,35 +1,29 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
 import { loginEmailOrUsername } from '../utils/loginHelpers';
 import { UserLogin } from '../types';
 import { UserContext, UserContextType } from '../context/userContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUser, selectUser, selectUserState } from '../slices/userSlice';
+import { AppDispatch } from '../utils/store';
+import { getFriends } from '../slices/friendsSlice';
 
 function Login() {
-    const { setUser, setUpdateContext } = useContext(UserContext) as UserContextType;
+    // const { setUser, setUpdateContext } = useContext(UserContext) as UserContextType;
+    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate();
-
+    const userDataState = useSelector(selectUserState)
     const [msg, setMsg] = useState('');
     const [loginCreds, setLoginCreds] = useState<UserLogin>({
         usernameOrEmail: '',
         password: '',
     });
-
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const loggedUser = await loginEmailOrUsername(loginCreds);
-
-            if (!loggedUser) throw new Error('logged in user not found');
-
-            if (loggedUser.username !== null) {
-                setUpdateContext(true)
-                setUser(loggedUser);
-                console.log('logged in', loggedUser);
-                navigate('/');
-            } else {
-                throw new Error();
-            }
+            await dispatch(getUser(loginCreds));
+            navigate('/');
         } catch (err) {
             console.log(err);
             setMsg('user is already logged in');

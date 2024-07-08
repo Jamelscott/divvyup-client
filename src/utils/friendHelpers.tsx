@@ -10,7 +10,7 @@ type friendOwingDiff = {
     friendUsername: string,
 }
 
-export const handleRequestFriend = async (usernameOrEmail: string, user: User): Promise<any> => {
+export const handleRequestFriend = async (usernameOrEmail: string, user: User) => {
     const isEmail = usernameOrEmail.includes('@');
     const { id: userId, username } = user;
 
@@ -20,18 +20,18 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User): 
                 .from('profiles')
                 .select('*')
                 .eq('email', usernameOrEmail);
-            if (newFriend.error) return { error: `error finding friend profile with email: ${newFriend.error}` }
-            if (newFriend.data[0].id === userId) return { error: `you can't add yourself silly` }
+            if (newFriend.error) throw new Error(`error finding friend profile with email: ${newFriend.error}`)
+            if (newFriend.data[0].id === userId) throw new Error(`you can't add yourself silly`)
             // throw new Error(`error finding friend profile with email: ${newFriend.error}`);
             if (newFriend.data) {
-                const { data, error } = await supabase
+                const { data, error }: any = await supabase
                     .from('friends')
                     .insert([
                         { type: 'pending', user_one_uuid: userId, user_two_uuid: newFriend.data[0].id, user_one_username: username, user_two_username: newFriend.data[0].username },
                     ])
                     .select();
                 if (error) {
-                    return { error: `error inserting friend: ${error}` };
+                    throw new Error('error getting friend data')
                     // throw new Error(`error inserting friend: ${error}`);
                 }
                 return data;
@@ -45,11 +45,11 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User): 
                 .from('profiles')
                 .select('*')
                 .eq('username', usernameOrEmail);
-            if (newFriend.error) return `error finding friend profile with username: ${newFriend.error}`
-            if (newFriend.data[0].id === userId) return { error: `you can't add yourself silly` }
+            if (newFriend.error) throw new Error(`error finding friend profile with username: ${newFriend.error}`)
+            if (newFriend.data[0].id === userId) throw new Error(`you can't add yourself silly`)
             // throw new Error(`error finding friend profile with username: ${newFriend.error}`);
             if (newFriend.data) {
-                const { data, error } = await supabase
+                const { data, error }: any = await supabase
                     .from('friends')
                     .insert([
                         {
@@ -63,10 +63,10 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User): 
                     .select();
                 if (error) {
                     if (error.code === '23505') {
-                        return { error: `friend request pending or youre already friends` }
+                        throw new Error(`friend request pending or youre already friends`)
                         // throw new Error(`friend request pending or youre already friends`);;
                     }
-                    return { error: `error inserting friend: ${error}` }
+                    throw new Error(`error inserting friend: ${error}`)
                     // throw new Error(`error inserting friend: ${error}`);
                 }
                 return data;
@@ -77,7 +77,7 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User): 
     }
 };
 
-export const getFriendRequests = async (user: User): Promise<FriendRequest[]> => {
+export const fetchFriendRequests = async (user: User): Promise<FriendRequest[]> => {
     const { data: pendingRequests, error } = await supabase
         .from('friends')
         .select('*')
@@ -90,7 +90,7 @@ export const getFriendRequests = async (user: User): Promise<FriendRequest[]> =>
     return pendingRequests as FriendRequest[];
 };
 
-export const acceptFriendRequest = async (requestId: string) => {
+export const acceptFriendRequest = async (requestId: string): Promise<FriendRequest> => {
     const { data: newFriendData, error } = await supabase
         .from('friends')
         .update({ type: 'complete' })
@@ -100,10 +100,10 @@ export const acceptFriendRequest = async (requestId: string) => {
     if (error) {
         console.log(error);
     }
-    return newFriendData;
+    return newFriendData as any;
 };
 
-export const rejectFriendRequest = async (requestId: string) => {
+export const deleteFriendRequest = async (requestId: string) => {
     const { error } = await supabase
         .from('friends')
         .delete()
@@ -116,7 +116,7 @@ export const rejectFriendRequest = async (requestId: string) => {
     return true;
 };
 
-export const getFriends = async (userId: string) => {
+export const fetchFriends = async (userId: string) => {
     const { data: friendships, error } = await supabase
         .from('friends')
         .select('*')
