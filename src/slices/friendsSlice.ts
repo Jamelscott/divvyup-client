@@ -25,7 +25,7 @@ export const getFriendRequests = createAsyncThunk(
         async (user: User, thunkApi) => {
                 const friendRequests = await fetchFriendRequests(user);
                 if (!friendRequests) {
-                        return thunkApi.rejectWithValue('error');
+                        return [];
                 }
                 return friendRequests;
         }
@@ -70,6 +70,7 @@ const initialState: GenericDataState<FriendSliceData> = {
         data: {
                 friends: [],
                 friendRequests: [],
+                activeList: null,
         },
         dataState: DataState.INITIAL,
         error: null
@@ -83,6 +84,9 @@ const friendsSlice = createSlice({
                         state.data = initialState.data;
                         state.dataState = DataState.INITIAL;
                 },
+                setActiveExpenseList(state, action) {
+                        state.data.activeList = action.payload
+                }
         },
         extraReducers: (builder) => {
                 builder
@@ -122,8 +126,8 @@ const friendsSlice = createSlice({
                         .addCase(postFriendRequest.pending, (state) => {
                                 state.dataState = DataState.LOADING;
                         })
-                        .addCase(postFriendRequest.fulfilled, (state, action: PayloadAction<FriendRequest>) => {
-                                state.data.friendRequests = [...state.data.friendRequests, action.payload] ?? [];
+                        .addCase(postFriendRequest.fulfilled, (state, action: PayloadAction<FriendRequest[]>) => {
+                                state.data.friendRequests = [...state.data.friendRequests, ...action.payload];
                                 state.dataState = DataState.FULFILLED;
                         })
                         .addCase(postFriendRequest.rejected, (state, action) => {
@@ -170,7 +174,7 @@ const friendsSlice = createSlice({
 
 export default friendsSlice.reducer;
 
-export const { expireFriends } = friendsSlice.actions;
+export const { expireFriends, setActiveExpenseList } = friendsSlice.actions;
 
 export const selectFriendsState = (state: RootState) =>
         state.friends.dataState;
@@ -180,3 +184,11 @@ export const selectFriends = (state: RootState) =>
 
 export const selectFriendRequests = (state: RootState) =>
         state.friends.data.friendRequests || initialState.data.friendRequests;
+
+export const selectActiveFriendExpenses = (state: RootState) => {
+        const friendId = state.friends.data.activeList
+        if (!friendId) return []
+        const friendExpenses = state.user.data.expenses.filter((expense) => expense.lender === friendId || expense.ower === friendId).sort((a, b) => new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf())
+        console.log(friendExpenses)
+        return friendExpenses
+}

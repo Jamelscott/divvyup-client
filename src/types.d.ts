@@ -42,18 +42,29 @@ export type ExpenseData = {
     date: Date,
     ower: string,
     lender: string
-    createdAt: Date;
+    created_at: Date;
 }
 
 export type AddExpense = Expense & {
     friendId: string
 }
 
+export enum ExpenseListType {
+    RECENT,
+    USER_SPECIFIC
+}
+
+export enum FriendListType {
+    HOMEPAGE,
+    FRIENDS_PAGE
+};
+
 export type ExpenseType = 'dining out' | 'grocery' | 'household' | 'misc' | 'mortgage' | 'pet' | 'rent'
 
 export type FriendSliceData = {
     friendRequests: FriendRequest[],
     friends: User[]
+    activeList: string | null;
 }
 
 export type FriendRequest = {

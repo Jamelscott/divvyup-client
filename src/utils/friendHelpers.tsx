@@ -1,7 +1,8 @@
+import { notifications } from '@mantine/notifications';
 import { supabase } from '../supabase';
 import { ExpenseData, FriendRequest, User } from '../types';
 
-type friendOwingDiff = {
+export type FriendOwingDiff = {
     yourSpent: number,
     friendSpent: number,
     yourPayments: ExpenseData[],
@@ -46,9 +47,9 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User) =
                 .select('*')
                 .eq('username', usernameOrEmail);
             if (newFriend.error) throw new Error(`error finding friend profile with username: ${newFriend.error}`)
-            if (newFriend.data[0].id === userId) throw new Error(`you can't add yourself silly`)
+            if (newFriend.data[0] && newFriend.data[0].id === userId) throw new Error(`you can't add yourself silly`)
             // throw new Error(`error finding friend profile with username: ${newFriend.error}`);
-            if (newFriend.data) {
+            if (newFriend.data[0]) {
                 const { data, error }: any = await supabase
                     .from('friends')
                     .insert([
@@ -63,13 +64,27 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User) =
                     .select();
                 if (error) {
                     if (error.code === '23505') {
-                        throw new Error(`friend request pending or youre already friends`)
+                        notifications.show({
+                            title: 'Friend Request Failed',
+                            message: 'already friends or request is pending',
+                            color: 'grape',
+                            withBorder: true,
+                            radius: "md",
+                        })
                         // throw new Error(`friend request pending or youre already friends`);;
                     }
                     throw new Error(`error inserting friend: ${error}`)
                     // throw new Error(`error inserting friend: ${error}`);
                 }
                 return data;
+            } else {
+                notifications.show({
+                    title: 'Friend Request Failed',
+                    message: 'That user may not exist',
+                    color: 'grape',
+                    withBorder: true,
+                    radius: "md",
+                })
             }
         } catch (error) {
             throw new Error(`Error: ${error}`);
@@ -159,7 +174,7 @@ export const getProfile = async (profileId: string) => {
     return profile
 }
 
-export const friendOwingDiff = (user: User, expenses: ExpenseData[], friend: User): friendOwingDiff => {
+export const friendOwingDiff = (user: User, expenses: ExpenseData[], friend: User): FriendOwingDiff => {
     const friendExpenses = expenses.reduce((acc: any, curr: any) => {
         if ((curr.lender === user.id && curr.ower !== friend.id) || (curr.lender !== friend.id && curr.ower === user.id)) return acc
         if (curr.lender === user.id) {

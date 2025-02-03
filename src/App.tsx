@@ -1,23 +1,32 @@
-import Login from './Login/Login';
+import Login from './components/Login/Login.tsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import SignUp from './SignUp/SignUp.tsx';
-import Navbar from './components/Navbar/Navbar.tsx';
+import SignUp from './components/SignUp/SignUp.tsx';
 import Home from './components/Home/Home.tsx';
 import Analytics from './components/Analytics/Analytics.tsx';
 import Profile from './components/Profile/Profile.tsx';
 import Friends from './components/Friends/Friends.tsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUser, selectUserState, userSession } from './slices/userSlice.ts';
+import { DataState, selectUser, selectUserState, userSession } from './slices/userSlice.ts';
 import { useEffect, useState } from 'react';
 import { User } from './types';
-import { getFriends } from './slices/friendsSlice.ts';
+import { getFriends, selectFriendsState } from './slices/friendsSlice.ts';
 import { AppDispatch } from './utils/store.ts';
+import { FloatingNav } from './components/Navbar/FloatingNav.tsx';
+import './globals.css'
+import DotPattern from './components/magicui/dot-pattern.tsx';
+import LoadingHourglass from './components/Loading/LoadingHourglass.tsx';
+// import Friend from './components/Friends/components/Friend.tsx';
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 
 function App() {
     const userDataState = useSelector(selectUserState)
+    const friendsDataState = useSelector(selectFriendsState)
     const user = useSelector(selectUser)
     const dispatch = useDispatch<AppDispatch>()
     const [_currentUser, setCurrentUser] = useState<User>(user)
+    const isLoading = userDataState === DataState.LOADING || friendsDataState === DataState.LOADING
 
     useEffect(() => {
         if (user.id) {
@@ -34,20 +43,23 @@ function App() {
 
 
     return (
-        <BrowserRouter>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                {!!user?.username && <Navbar />}
-                {/* {errorMsg?.length > 0 && <ErrorMsg />} */}
+        <MantineProvider>
+            <BrowserRouter>
+                <DotPattern />
+                {!!user?.username && <FloatingNav />}                {/* {errorMsg?.length > 0 && <ErrorMsg />} */}
                 <Routes>
                     <Route path='/' element={user.id ? <Home /> : <Login />} />
                     <Route path='/analytics' element={<Analytics />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/friends' element={<Friends />} />
+                    {/* <Route path='/friends/:id' element={<Friend />} /> */}
                     <Route path='/login' element={<Login />} />
                     <Route path='/signup' element={<SignUp />} />
                 </Routes>
-            </div>
-        </BrowserRouter>
+                {isLoading && <LoadingHourglass />}
+                <Notifications color="grape" className='w-fit absolute bottom-10 right-5' />
+            </BrowserRouter>
+        </MantineProvider>
     );
 }
 

@@ -23,18 +23,22 @@ export const handleAddExpense = async (expense: AddExpense, user: User, friend: 
         quantity: Number(quantity),
         splitpercentage: Number(splitpercentage),
     }
-    console.log(newExpense)
-    const { data, error }: any = await supabase
-        .from('expenses')
-        .insert([newExpense])
-        .select();
-    if (error) {
+    try {
+        const { data, error }: any = await supabase
+            .from('expenses')
+            .insert([newExpense])
+            .select();
+        if (error) {
+            throw new Error('error')
+        }
+        return data[0]
+    } catch (err) {
+        console.log(err)
         throw new Error('error')
     }
-    return data
 };
 // dummy data: 'ower.eq.0ae9db38-6f02-4ebd-8552-f5632daccce3,lender.eq.0ae9db38-6f02-4ebd-8552-f5632daccce3'
-export const handleFetchSingleProfileExpenses = async (id: string) => {
+export const handleFetchSingleProfileExpenses = async (id: string): Promise<ExpenseData[]> => {
     const { data, error } = await supabase
         .from('expenses')
         .select('*')
@@ -72,7 +76,6 @@ export const youOweThem = (expense: ExpenseData, userId: string) => {
     // let userIsLender: boolean;
     if (!expense || !userId) return
     if (userId !== expense.lender) if (userId !== expense.ower) {
-        console.log('hi')
         return
     }
     if (userId !== expense.lender) {
@@ -91,7 +94,7 @@ export const calcTotalExpenseDiff = (expenses: ExpenseData[], user: User) => {
     return total
 }
 
-export const deleteExpense = async (expense: ExpenseData, user: User) => {
+export const handleDeleteExpense = async (expense: ExpenseData, user: User) => {
     if (expense.lender !== user.id && expense.ower !== user.id) throw new Error('user cannot delete another users expense')
     const { error, data } = await supabase
         .from('expenses')
@@ -102,12 +105,16 @@ export const deleteExpense = async (expense: ExpenseData, user: User) => {
     if (data) console.log(data)
 }
 
-export const editExpense = async (newExpenseData: ExpenseData, expenseId: string) => {
+export const handleEditExpense = async (newExpenseData: ExpenseData, expenseId: string) => {
     const { data, error } = await supabase
         .from('expenses')
         .update(newExpenseData)
         .eq('id', expenseId)
         .select()
-    if (error) console.log(error)
-    if (data) console.log(data)
+    if (error) {
+        throw new Error(error.message)
+    }
+    if (data) {
+        return data[0] as ExpenseData
+    }
 }

@@ -1,9 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ExpenseData, GenericDataState, User, UserLogin, AddExpense } from "../types";
-import { handleLogout, handleUserSession, loginEmailOrUsername } from "../utils/loginHelpers";
+import { handleDeleteUserExpenseSession, handleLogout, handleUpdateUserExpenseSession, handleUserSession, loginEmailOrUsername } from "../utils/loginHelpers";
 import { RootState } from "../utils/store";
-import { handleAddExpense, handleFetchSingleProfileExpenses } from "../utils/expenseHelpers";
+import { handleAddExpense, handleDeleteExpense, handleEditExpense, handleFetchSingleProfileExpenses } from "../utils/expenseHelpers";
 import { uploadProfilePhoto } from "../utils/profileHelper";
+import { supabase } from "../supabase";
 
 export enum DataState {
 	INITIAL,
@@ -27,6 +28,55 @@ export const getUser = createAsyncThunk(
 	}
 );
 
+export const getUserById = createAsyncThunk(
+	'user/get/fetchUserById',
+	async (userId: string, thunkApi) => {
+		const { data, error } = await supabase
+			.from('profiles')
+			.select('*')
+			.eq('id', userId)
+			.single()
+		const userExpenses = await handleFetchSingleProfileExpenses(data.id)
+		const user = {
+			...data, expenses: userExpenses
+		} as User;
+		if (error) {
+			return thunkApi.rejectWithValue('error');
+		}
+		return user;
+	}
+);
+export const getActiveSession = createAsyncThunk(
+	'user/get/getActiveSession',
+	async (thunkApi) => {
+		const session = await supabase.auth.getSession()
+		if (!session || !session.data.session) {
+			return null
+		}
+
+		const { id } = session.data.session.user
+		const { data: profile, error } = await supabase
+			.from('profiles')
+			.select('*')
+			.eq('id', id)
+			.single()
+		const userExpenses = await handleFetchSingleProfileExpenses(id as any)
+
+		const userSessionData: User = {
+			id: id,
+			username: profile.username,
+			email: profile.email,
+			expenses: userExpenses,
+			photo: profile.photo
+		}
+		return userSessionData
+		// if (error) {
+		// 	return thunkApi.rejectWithValue('error');
+		// }
+		// return user;
+	}
+);
+
 export const updatePhoto = createAsyncThunk(
 	'user/put/photo',
 	async (params: { user: User, publicId: string }, thunkApi) => {
@@ -47,6 +97,7 @@ export const postExpense = createAsyncThunk(
 		const { user, expenseData, transactionFriend } = params;
 		try {
 			const newExpense = await handleAddExpense(expenseData, user, transactionFriend)
+			handleUpdateUserExpenseSession(newExpense)
 			return newExpense;
 		} catch (err) {
 			console.error(err)
@@ -54,6 +105,35 @@ export const postExpense = createAsyncThunk(
 		}
 	}
 );
+
+export const deleteExpense = createAsyncThunk(
+	'user/delete/expense',
+	async (params: { expense: ExpenseData, user: User }, thunkApi) => {
+		const { expense, user } = params;
+		try {
+			await handleDeleteExpense(expense, user)
+			handleDeleteUserExpenseSession(expense)
+			return expense
+		} catch (err) {
+			console.error(err)
+			return thunkApi.rejectWithValue('error');
+		}
+	}
+)
+
+export const editExpense = createAsyncThunk(
+	'user/edit/expense',
+	async (params: { newExpenseData: ExpenseData, expenseId: string }, thunkApi) => {
+		const { newExpenseData, expenseId } = params;
+		try {
+			const updatedExpenses = await handleEditExpense(newExpenseData, expenseId)
+			return updatedExpenses
+		} catch (err) {
+			console.error(err)
+			return thunkApi.rejectWithValue('error');
+		}
+	}
+)
 
 export const logoutUser = createAsyncThunk(
 	'user/logout',
@@ -115,6 +195,24 @@ const userSlice = createSlice({
 				}
 				state.dataState = DataState.ERROR;
 			})
+			.addCase(getUserById.pending, (state) => {
+				state.dataState = DataState.LOADING;
+			})
+			.addCase(
+				getUserById.fulfilled,
+				(state, action: PayloadAction<User | undefined>) => {
+					state.data = action.payload ?? ({} as User);
+					state.dataState = DataState.FULFILLED;
+				}
+			)
+			.addCase(getUserById.rejected, (state, action) => {
+				if (action.payload) {
+					state.error = action.payload;
+				} else {
+					state.error = 'err';
+				}
+				state.dataState = DataState.ERROR;
+			})
 			.addCase(updatePhoto.pending, (state) => {
 				state.dataState = DataState.LOADING;
 			})
@@ -139,7 +237,7 @@ const userSlice = createSlice({
 			.addCase(
 				postExpense.fulfilled,
 				(state, action: PayloadAction<ExpenseData>) => {
-					state.data.expenses = [...state.data.expenses, action.payload];
+					state.data.expenses.unshift(action.payload);
 					state.dataState = DataState.FULFILLED;
 				}
 			)
@@ -169,6 +267,63 @@ const userSlice = createSlice({
 				}
 				state.dataState = DataState.ERROR;
 			})
+			.addCase(getActiveSession.pending, (state) => {
+				state.dataState = DataState.LOADING;
+			})
+			.addCase(
+				getActiveSession.fulfilled,
+				(state, action) => {
+					state.data = action.payload ?? ({} as User);
+					state.dataState = DataState.FULFILLED
+				}
+			)
+			.addCase(getActiveSession.rejected, (state, action) => {
+				if (action.payload) {
+					state.error = action.payload;
+				} else {
+					state.error = 'err';
+				}
+				state.dataState = DataState.ERROR;
+			})
+			.addCase(deleteExpense.pending, (state) => {
+				state.dataState = DataState.LOADING;
+			})
+			.addCase(
+				deleteExpense.fulfilled,
+				(state, action) => {
+					state.data.expenses = state.data.expenses.filter((expense) => expense.id !== action.payload.id)
+					state.dataState = DataState.FULFILLED
+				}
+			)
+			.addCase(deleteExpense.rejected, (state, action) => {
+				if (action.payload) {
+					state.error = action.payload;
+				} else {
+					state.error = 'err';
+				}
+				state.dataState = DataState.ERROR;
+			})
+			.addCase(editExpense.pending, (state) => {
+				state.dataState = DataState.LOADING;
+			})
+			.addCase(
+				editExpense.fulfilled,
+				(state, action) => {
+					if (action.payload) {
+						const pos = state.data.expenses.map(e => e.id).indexOf(action.payload.id);
+						state.data.expenses[pos] = action.payload
+						state.dataState = DataState.FULFILLED
+					}
+				}
+			)
+			.addCase(editExpense.rejected, (state, action) => {
+				if (action.payload) {
+					state.error = action.payload;
+				} else {
+					state.error = 'err';
+				}
+				state.dataState = DataState.ERROR;
+			})
 	},
 });
 
@@ -183,3 +338,6 @@ export const selectUser = (state: RootState) =>
 	state.user.data as User || initialState.data;
 export const selectExpenses = (state: RootState) =>
 	state.user.data?.expenses || [];
+
+export const selectExpenseUserPaidFor = (state: RootState) =>
+	state.user.data?.expenses.filter(expense => expense.lender === state.user.data.id).sort();

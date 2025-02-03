@@ -1,47 +1,45 @@
-import { useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import TestExpenses from '../../TestApp/TestExpenses';
-import { calcTotalExpenseDiff } from '../../utils/expenseHelpers';
-import SideBar from '../Sidebar/Sidebar';
-import HomeSidebar from './HomeSidebar';
+import { useEffect } from 'react';
+import ExpenseList, { ExpenseListType } from '../Expenses/ExpenseList';
+import ProfileData from './ProfileData';
+import { getFriendRequests, selectFriends, selectFriendsState, setActiveExpenseList } from '@/slices/friendsSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { DataState, selectExpenses, selectUser } from '../../slices/userSlice';
-import { getFriends, selectFriends, selectFriendsState } from '../../slices/friendsSlice';
-import { AppDispatch } from '../../utils/store';
+import { DataState, selectUser } from '@/slices/userSlice';
+import { AppDispatch } from '@/utils/store';
+import FriendsList from '../Friends/components/FriendsList';
+import FriendRequests from '../Friends/components/FriendRequests';
+
+export enum FriendSourceType {
+    FRIENDS_PAGE,
+    HOME_PAGE
+}
 
 function Home() {
-    const user = useSelector(selectUser)
     const friends = useSelector(selectFriends)
-    const friendsDataState = useSelector(selectFriendsState)
-    const expenses = useSelector(selectExpenses)
-    const navigate = useNavigate();
+    const user = useSelector(selectUser)
+    const friendsState = useSelector(selectFriendsState)
     const dispatch = useDispatch<AppDispatch>()
-    const expenseDiff = useMemo(() => calcTotalExpenseDiff(expenses, user), [expenses])
 
-    const getTotalNum = (num: number) => {
-        return Number(Math.round(parseFloat(Math.abs(num) + 'e' + 2)) + 'e-' + 2).toFixed(2);
-    }
-    const checkOwing = () => {
-        if (expenseDiff > 0) {
-            return <h3 style={{ color: 'green' }}>Overall, you are owed ${expenseDiff.toFixed(2)}</h3>
-        } else if (expenseDiff < 0) {
-            return <h3 style={{ color: 'red' }}>Overall, you owe ${getTotalNum(expenseDiff)}</h3>
-        } else if (expenseDiff === 0 && expenses.length > 1) {
-            return <h3 style={{ color: 'black' }}>You are all squared up</h3>
-        } else {
-            return <h3 style={{ color: 'black' }}>You are owed the same amount that you owe your friends</h3>
+    useEffect(() => {
+        if (friendsState === DataState.INITIAL && user) {
+            dispatch(getFriendRequests(user))
         }
-    }
-
+        if (friendsState === DataState.FULFILLED && friends.length > 0) {
+            dispatch(setActiveExpenseList(friends[0].id))
+        }
+    }, [])
     return (
         <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', paddingLeft: '20px' }}>
-                <div>
-                    {checkOwing()}
-                    <TestExpenses />
+            <div className={`flex p-5 gap-5 w-full ${friends.length > 0 ? 'justify-between' : 'justify-center'}`} style={{ height: '98vh', overflow: 'hidden' }}>
+                {friends.length > 0 && <div className='grow max-w-4xl'>
+                    <ExpenseList sourceType={ExpenseListType.RECENT} />
+                </div>}
+                <div className={`flex flex-col max-w-2xl gap-5 items-end ${friends.length > 0 ? '' : 'items-center'}`} >
+                    <ProfileData />
+                    {/* <QuickFeatures /> */}
+                    {/* <FriendRequests /> */}
+                    {friends.length > 0 ? <FriendsList sourceType={FriendSourceType.HOME_PAGE} /> : <FriendRequests />}
                 </div>
-                <SideBar sideBarComponent={<HomeSidebar />} />
-            </div>
+            </div >
         </>
     );
 }

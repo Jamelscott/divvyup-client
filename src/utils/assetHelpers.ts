@@ -1,8 +1,14 @@
-import grocery from '../../../assets/expenseOptions/grocery.svg'
-import household from '../../../assets/expenseOptions/household.svg'
-import mortgage from '../../../assets/expenseOptions/mortgage.svg'
-import pet from '../../../assets/expenseOptions/pet.svg'
-import rent from '../../../assets/expenseOptions/rent.svg'
+import grocery from '../../assets/expenseOptions/grocery.svg'
+import household from '../../assets/expenseOptions/household.svg'
+import mortgage from '../../assets/expenseOptions/mortgage.svg'
+import pet from '../../assets/expenseOptions/pet.svg'
+import rent from '../../assets/expenseOptions/rent.svg'
+import diningOut from '../../assets/expenseOptions/diningOut.svg'
+import analyticsIcon from '../../assets/navbarIcons/analytics-icon.svg'
+import friendsIcon from '../../assets/navbarIcons/friends-icon.svg'
+import homeIcon from '../../assets/navbarIcons/home-icon.svg'
+import profileIcon from '../../assets/navbarIcons/profile-icon.svg'
+import logoutIcon from '../../assets/navbarIcons/logout-icon.svg'
 
 export const navOptions = [
     {

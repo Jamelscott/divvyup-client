@@ -1,7 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { UserContext, UserContextType } from "../context/userContext";
-import { uploadProfilePhoto } from "./profileHelper";
-import { handleUpdateUserSession } from "./loginHelpers";
+import { createContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "./store";
 import { selectUser, updatePhoto } from "../slices/userSlice";

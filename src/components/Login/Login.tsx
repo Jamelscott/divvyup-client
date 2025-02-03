@@ -1,19 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
-import { loginEmailOrUsername } from '../utils/loginHelpers';
-import { UserLogin } from '../types';
-import { UserContext, UserContextType } from '../context/userContext';
+import { UserLogin } from '../../types';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUser, selectUser, selectUserState } from '../slices/userSlice';
-import { AppDispatch } from '../utils/store';
-import { getFriends } from '../slices/friendsSlice';
+import { getUser, selectUser } from '../../slices/userSlice';
+import { AppDispatch } from '../../utils/store';
+import { NeonGradientCard } from '../magicui/neon-gradient-card';
+import SparklesText from '../magicui/sparkles-text';
 
 function Login() {
-    // const { setUser, setUpdateContext } = useContext(UserContext) as UserContextType;
     const dispatch = useDispatch<AppDispatch>()
+    const user = useSelector(selectUser)
     const navigate = useNavigate();
-    const userDataState = useSelector(selectUserState)
     const [msg, setMsg] = useState('');
     const [loginCreds, setLoginCreds] = useState<UserLogin>({
         usernameOrEmail: '',
@@ -30,22 +28,20 @@ function Login() {
         }
     };
 
+    useEffect(() => {
+        if (user) {
+            navigate('/')
+        }
+    }, [])
+
     return (
-        <div style={{ width: '100%' }}>
-            <div
-                style={{
-                    position: 'relative',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    textAlign: 'center',
-                }}
-                className="list-container"
-            >
-                <p className="loginText">Login</p>
+        <div style={{ width: '100%', marginTop: '200px', display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
+            <NeonGradientCard className="max-w-sm items-center justify-center text-center">
+                <SparklesText sparklesCount={8} className="loginText" text="DivvyUp" />
                 {msg ? <p className="loginErrorText">{msg}</p> : <></>}
                 <form
                     style={{
+                        marginTop: '30px',
                         marginBottom: '0',
                         display: 'flex',
                         flexFlow: 'wrap',
@@ -75,7 +71,7 @@ function Login() {
                             setLoginCreds({ ...loginCreds, password: e.target.value })
                         }
                     />
-                    <input className="login-submit-button" type="submit" value="Submit" />
+                    <input className="login-submit-button" type="submit" value="Login" />
                 </form>
                 <hr className="whiteLine"></hr>
                 <p className="questionText">
@@ -84,23 +80,15 @@ function Login() {
                         here
                     </Link>
                 </p>
-            </div>
-            <div
-                style={{
-                    position: 'relative',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    textAlign: 'center',
-                    color: 'white'
-                }}
-                className="list-container"
-            >
-                <h4 className="loginText" style={{ marginTop: 0, marginBottom: 0 }}>Just visiting?</h4>
-                <hr className="whiteLine"></hr>
-                <p className="questionText">username: visitor </p>
-                <p className="questionText">password: visitor </p>
-            </div>
+            </NeonGradientCard>
+            {/* <div style={{ position: 'absolute', left: '40px', bottom: "40px" }}>
+                <NeonGradientCard className="max-w-sm items-center justify-center text-center">
+                    <h4 className="loginTextTwo" style={{ marginTop: 0, marginBottom: 0 }}>Just visiting?</h4>
+                    <hr className="whiteLine"></hr>
+                    <p className="questionText">username: visitor </p>
+                    <p className="questionText">password: visitor </p>
+                </NeonGradientCard>
+            </div> */}
         </div>
     );
 }

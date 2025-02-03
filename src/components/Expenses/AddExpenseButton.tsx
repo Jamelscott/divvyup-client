@@ -12,16 +12,6 @@ function AddExpenseButton() {
     const [openModal, setOpenModal] = useState(false);
     const [currentFriends, setCurrentFriends] = useState<User[]>(friends)
 
-    if (!currentFriends || currentFriends.length < 1) {
-        return (
-            <>
-                <p>Get some friends loser</p>
-                <FriendRequestForm />
-                <FriendRequests />
-            </>
-        )
-    }
-
     return (
         <>
             <h1>Add Expense: </h1>

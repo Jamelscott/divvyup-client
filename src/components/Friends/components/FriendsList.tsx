@@ -1,46 +1,48 @@
-import { friendOwingDiff } from "../../../utils/friendHelpers";
-import { getUser, selectUser } from "../../../slices/userSlice";
+import { selectUser } from "../../../slices/userSlice";
 import { DataState, getFriends, selectFriends, selectFriendsState } from "../../../slices/friendsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppDispatch } from "../../../utils/store";
+import Friend from "./Friend";
+import { User } from "@/types";
+import { Modal } from "@mantine/core";
+import ExpenseModal from "@/components/Expenses/ExpenseModal/ExpenseModal";
+import { useDisclosure } from "@mantine/hooks";
+import { FriendSourceType } from "@/components/Home/Home";
 
-function FriendsList() {
-        const friends = useSelector(selectFriends)
+function FriendsList({ sourceType }: { sourceType: FriendSourceType }) {
         const friendsDataState = useSelector(selectFriendsState)
+        const friends = useSelector(selectFriends)
         const user = useSelector(selectUser)
         const dispatch = useDispatch<AppDispatch>()
+        const [opened, { open, close }] = useDisclosure(false);
+        const [modalFriend, setModalFriend] = useState<User>()
 
         useEffect(() => {
                 if (user.id && friendsDataState === DataState.INITIAL) {
                         dispatch(getFriends(user.id))
                 }
         }, [user])
-        return (
-                <div>
-                        <h2>Friends List</h2>
-                        {user.expenses && friends?.map((friend, idx) => {
-                                const friendDiff = friendOwingDiff(user, user.expenses, friend)
-                                const noExpenses = friendDiff.totalSpent === 0
-                                const youSpentMore = friendDiff.yourSpent > friendDiff.friendSpent
-                                const friendSpentMore = friendDiff.friendSpent > friendDiff.yourSpent
-                                return (
-                                        <div key={idx}>
-                                                <h4>{friend.username}
-                                                        <span style={{ color: noExpenses ? 'black' : youSpentMore ? 'green' : 'red' }}>
-                                                                {noExpenses ? ' is square with you' : youSpentMore ? ' owes you' : ' lent you'}
-                                                        </span>
-                                                        {' $'}
-                                                        {!noExpenses && youSpentMore ? friendDiff.yourSpent - friendDiff.friendSpent : !noExpenses && friendSpentMore ? friendDiff.friendSpent - friendDiff.yourSpent : ''}
-                                                </h4>
-                                                <input type="button" value="see expenses" />
-                                                <input type="button" value="settle up" />
-                                                <input type="button" value="remove friend" />
-                                        </div>
-                                )
-                        })}
-                </div >
-        );
+
+        const handleOpenExpenseModal = (friend: User) => {
+                setModalFriend(friend)
+                open()
+                return
+        }
+
+        return <>
+                <>
+                        <div className="flex flex-col items-center gap-5 bg-white rounded-3xl border-black border p-2.5 shadow-lg w-full overflow-y-scroll" style={{ height: '100%' }}>
+                                <h2><b>Friends</b></h2>
+                                <div className="h-full overflow-y-scroll w-full p-5" style={{ height: 'fit-content' }}>
+                                        {user.expenses && friends?.map((friend, idx) => <Friend key={friend.id} handleOpenExpenseModal={handleOpenExpenseModal} friend={friend} sourceType={sourceType} />)}
+                                </div>
+                        </div >
+                        <Modal opened={opened} onClose={close} size='xl' title="Add an Expense">
+                                <ExpenseModal onClose={close} selectedFriend={modalFriend} />
+                        </Modal>
+                </>
+        </>
 }
 
 export default FriendsList;

@@ -14,9 +14,9 @@ import { DataState, logoutUser, selectUser, selectUserState } from '../../slices
 import { AppDispatch } from '../../utils/store';
 import { expireFriends } from '../../slices/friendsSlice';
 
-const navOptions = [
+const navOptions: any = [
     {
-        id: 'home',
+        id: 'ome',
         image: homeIcon,
         route: '/',
         active: false
@@ -62,7 +62,7 @@ function Navbar() {
         return
     };
 
-    const options = navOptions.map((option) => {
+    const options = navOptions.map((option: any) => {
         const handleOnClick = () => {
             if (option.id === 'logout') {
                 (async () => logout())()

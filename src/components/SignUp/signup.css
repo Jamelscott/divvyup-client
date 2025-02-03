@@ -1,8 +1,10 @@
-.errorText {
+.errorTextContainer {
     font-style: italic;
     color: rgb(204, 0, 0);
-    margin: 10px 0;
-    font-size: 15px;
+    margin-bottom: 3px;
+    height: 25px;
+    line-height: 0px;
+    font-size: 13px;
 }
 
 .list-container {
@@ -13,4 +15,8 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.183);
-  }
+}
+
+.signInText {
+margin-bottom: 35px;
+}

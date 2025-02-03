@@ -1,5 +1,5 @@
 import { supabase } from '../supabase';
-import { UserLogin, UserSignUp, SignUpError, User } from '../types';
+import { UserLogin, UserSignUp, SignUpError, User, ExpenseData } from '../types';
 
 const nullUser = {
     id: '',
@@ -57,7 +57,7 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
             }
         } else {
             try {
-                const { data, error } = await supabase.from('profiles').select().eq('username', usernameOrEmail);
+                const { data, error } = await supabase.from('profiles').select().eq('username', usernameOrEmail.toLocaleLowerCase());
                 if (error) throw error;
                 if (data) {
                     const response = await supabase.auth.signInWithPassword({ email: data[0].email, password: password });
@@ -109,11 +109,24 @@ export const handleUserSession = () => {
     return sessionUser;
 };
 
-export const handleUpdateUserSession = (newValues: {}): User => {
+export const handleUpdateUserExpenseSession = (newValue: ExpenseData): User => {
     const userString = sessionStorage.getItem('user');
     if (userString === null) throw new Error('user not initiated');
+    sessionStorage.setItem('user', JSON.stringify(nullUser));
     const parsedUser = JSON.parse(userString) as User
-    const updatedUser = { ...parsedUser, ...newValues }
+    const updatedUser = { ...parsedUser, expenses: [newValue, ...parsedUser.expenses] }
+    sessionStorage.setItem('user', JSON.stringify(updatedUser));
+    return updatedUser
+};
+
+export const handleDeleteUserExpenseSession = (expense: ExpenseData): User => {
+    const userString = sessionStorage.getItem('user');
+    if (userString === null) throw new Error('user not initiated');
+    sessionStorage.setItem('user', JSON.stringify(nullUser));
+    const parsedUser = JSON.parse(userString) as User
+    const existingExpenses = parsedUser.expenses
+
+    const updatedUser = { ...parsedUser, expenses: [...existingExpenses.filter((exp) => exp.id !== expense.id)] }
     sessionStorage.setItem('user', JSON.stringify(updatedUser));
     return updatedUser
 };
@@ -122,4 +135,10 @@ export const handleLogout = async () => {
     sessionStorage.setItem('user', JSON.stringify(nullUser));
     const { error } = await supabase.auth.signOut();
     return error;
+};
+
+export const handleGetUserById = async (userId: string): Promise<User> => {
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+    if (error) throw new Error('cannot find user')
+    return data;
 };
