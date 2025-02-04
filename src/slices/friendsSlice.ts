@@ -68,7 +68,7 @@ export const approveFriendRequest = createAsyncThunk(
 
 const initialState: GenericDataState<FriendSliceData> = {
         data: {
-                friends: [],
+                friends: null,
                 friendRequests: [],
                 activeList: null,
         },

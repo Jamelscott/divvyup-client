@@ -3,25 +3,36 @@ import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
 import { UserLogin } from '../../types';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUser, selectUser } from '../../slices/userSlice';
+import { getUser, selectUser, selectUserState } from '../../slices/userSlice';
 import { AppDispatch } from '../../utils/store';
 import { NeonGradientCard } from '../magicui/neon-gradient-card';
 import SparklesText from '../magicui/sparkles-text';
+import { DataState } from '@/slices/friendsSlice';
 
-function Login() {
+const DEFAULT_LOGINCREDS = {
+    usernameOrEmail: '',
+    password: '',
+}
+
+function Login({setIsLoggingIn}:{setIsLoggingIn: (val:boolean) => void}) {
     const dispatch = useDispatch<AppDispatch>()
     const user = useSelector(selectUser)
+    const userDataState = useSelector(selectUserState)
     const navigate = useNavigate();
     const [msg, setMsg] = useState('');
-    const [loginCreds, setLoginCreds] = useState<UserLogin>({
-        usernameOrEmail: '',
-        password: '',
-    });
+    const [loginCreds, setLoginCreds] = useState<UserLogin>(DEFAULT_LOGINCREDS);
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
+            setIsLoggingIn(true)
             await dispatch(getUser(loginCreds));
-            navigate('/');
+            if (user.id) {
+                setIsLoggingIn(false)
+                navigate('/');
+            } else {
+                setIsLoggingIn(false)
+                setLoginCreds(DEFAULT_LOGINCREDS)
+            }
         } catch (err) {
             console.log(err);
             setMsg('user is already logged in');
@@ -29,10 +40,12 @@ function Login() {
     };
 
     useEffect(() => {
-        if (user) {
+        if (user.id) {
             navigate('/')
         }
-    }, [])
+    }, [userDataState])
+
+    if (userDataState === DataState.LOADING) return;
 
     return (
         <div style={{ width: '100%', marginTop: '200px', display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
@@ -80,6 +93,7 @@ function Login() {
                         here
                     </Link>
                 </p>
+                {msg}
             </NeonGradientCard>
             {/* <div style={{ position: 'absolute', left: '40px', bottom: "40px" }}>
                 <NeonGradientCard className="max-w-sm items-center justify-center text-center">

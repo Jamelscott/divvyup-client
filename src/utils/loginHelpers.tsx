@@ -1,5 +1,7 @@
+import { notifications } from '@mantine/notifications';
 import { supabase } from '../supabase';
 import { UserLogin, UserSignUp, SignUpError, User, ExpenseData } from '../types';
+import { errorNotification } from '@/components/utils/notifications';
 
 const nullUser = {
     id: '',
@@ -39,9 +41,11 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
         const isEmail = usernameOrEmail.includes('@');
 
         if (isEmail) {
-            try {
                 const response = await supabase.auth.signInWithPassword({ email: usernameOrEmail, password: password });
-                if (response.error) throw response.error;
+                if (response.error) {
+                    notifications.show(errorNotification('Friend Request Fail','That user may not exist'))
+                    throw new Error(response.error.message)
+                };
                 if (response.data.user) {
                     const { data: profile, error } = await supabase
                         .from('profiles')
@@ -52,13 +56,12 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                     const signedInUser = userBuilder(profile);
                     return signedInUser;
                 }
-            } catch (error) {
-                throw new Error(`Error: ${error}`);
-            }
         } else {
-            try {
                 const { data, error } = await supabase.from('profiles').select().eq('username', usernameOrEmail.toLocaleLowerCase());
-                if (error) throw error;
+                if (error || data.length === 0) {
+                    notifications.show(errorNotification('Friend Request Failed','That usrname/email does not exist'))
+                    throw new Error('profile does not exist')
+                }
                 if (data) {
                     const response = await supabase.auth.signInWithPassword({ email: data[0].email, password: password });
                     if (response.error) throw response.error;
@@ -75,10 +78,7 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                     } else {
                         throw new Error('user not found - made a typo?');
                     }
-                } else throw 'User data not available';
-            } catch (error) {
-                throw new Error(`Error: ${error}`);
-            }
+                } else throw new Error ('User data not available');
         }
     }
 }

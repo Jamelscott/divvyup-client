@@ -45,8 +45,8 @@ export function FloatingNav() {
                 return
         };
         const options = navOptions.map((option) => {
-                if (option.id === 'friends' && friends.length === 0) return <></>
-                if (option.id === 'analytics' && friends.length === 0) return <></>
+                if (option.id === 'friends' && friends?.length === 0) return <></>
+                if (option.id === 'analytics' && friends?.length === 0) return <></>
                 const name = option.id
                 const Component = Icons[option.id]
                 const hoverString = name.charAt(0).toUpperCase() + name.slice(1);

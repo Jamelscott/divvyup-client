@@ -16,6 +16,9 @@ export const getUser = createAsyncThunk(
 	'user/get/fetchUser',
 	async (loginCreds: UserLogin, thunkApi) => {
 		const loggedUser = await loginEmailOrUsername(loginCreds);
+		if (!loggedUser) {
+			return thunkApi.rejectWithValue('error');
+		}
 		const userExpenses = await handleFetchSingleProfileExpenses(loggedUser?.id as any)
 		const user = {
 			...loggedUser, expenses: userExpenses

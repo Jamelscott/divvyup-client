@@ -17,7 +17,8 @@ function ExpenseList({ sourceType, friendExpenses }: { friendExpenses?: ExpenseD
         const friendUsername = () => {
                 if (!friendExpenses) return 'Friend'
                 const id = friendExpenses[0].lender === user.id ? friendExpenses[0].ower : friendExpenses[0].lender
-                const friendData = friends.find((friend) => friend.id === id)
+
+                const friendData = friends?.find((friend) => friend.id === id)
                 return friendData?.username
         }
         const header = sourceType === ExpenseListType.RECENT ? <h3><b>Recent Expenses</b></h3> : <h3><b>Expenses with {friendUsername()}</b></h3>

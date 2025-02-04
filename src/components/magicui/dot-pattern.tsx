@@ -34,7 +34,7 @@ export function DotPattern({
         className,
       )}
       {...props}
-      style={{ zIndex: -2147483648, height: '100vh' }}
+      style={{ zIndex: -2147483648, height: '100vh', backgroundColor:'grey' }}
     >
       <defs>
         <pattern

@@ -17,7 +17,7 @@ import DotPattern from './components/magicui/dot-pattern.tsx';
 import LoadingHourglass from './components/Loading/LoadingHourglass.tsx';
 // import Friend from './components/Friends/components/Friend.tsx';
 import '@mantine/core/styles.css';
-import { MantineProvider } from '@mantine/core';
+import { LoadingOverlay, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 
 function App() {
@@ -27,7 +27,8 @@ function App() {
     const dispatch = useDispatch<AppDispatch>()
     const [_currentUser, setCurrentUser] = useState<User>(user)
     const isLoading = userDataState === DataState.LOADING || friendsDataState === DataState.LOADING
-
+    const isInitializing = userDataState === DataState.INITIAL || friendsDataState === DataState.INITIAL
+    const [isLoggingIn, setIsLoggingIn] = useState(false)
     useEffect(() => {
         if (user.id) {
             setCurrentUser(user)
@@ -45,15 +46,22 @@ function App() {
     return (
         <MantineProvider>
             <BrowserRouter>
-                <DotPattern />
+            <DotPattern />
+               {isLoggingIn &&  <LoadingOverlay
+                visible={true}
+                zIndex={1000}
+                overlayProps={{ radius: 'sm', blur: 2 }}
+                loaderProps={{children: <LoadingHourglass/>}}
+                // loaderProps={{ children: <SparklesText sparklesCount={8} className="loginText" text="Loading..." />}}
+                />}
                 {!!user?.username && <FloatingNav />}                {/* {errorMsg?.length > 0 && <ErrorMsg />} */}
                 <Routes>
-                    <Route path='/' element={user.id ? <Home /> : <Login />} />
+                    <Route path='/' element={user.id || (!isInitializing || !isLoading) ? <Home /> : <Login setIsLoggingIn={setIsLoggingIn} />} />
                     <Route path='/analytics' element={<Analytics />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/friends' element={<Friends />} />
                     {/* <Route path='/friends/:id' element={<Friend />} /> */}
-                    <Route path='/login' element={<Login />} />
+                    <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn}/>} />
                     <Route path='/signup' element={<SignUp />} />
                 </Routes>
                 {isLoading && <LoadingHourglass />}

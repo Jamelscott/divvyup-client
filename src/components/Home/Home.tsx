@@ -3,10 +3,12 @@ import ExpenseList, { ExpenseListType } from '../Expenses/ExpenseList';
 import ProfileData from './ProfileData';
 import { getFriendRequests, selectFriends, selectFriendsState, setActiveExpenseList } from '@/slices/friendsSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { DataState, selectUser } from '@/slices/userSlice';
+import { DataState, selectUser, selectUserState } from '@/slices/userSlice';
 import { AppDispatch } from '@/utils/store';
 import FriendsList from '../Friends/components/FriendsList';
 import FriendRequests from '../Friends/components/FriendRequests';
+import LoadingHourglass from '../Loading/LoadingHourglass';
+import { LoadingOverlay } from '@mantine/core';
 
 export enum FriendSourceType {
     FRIENDS_PAGE,
@@ -16,17 +18,28 @@ export enum FriendSourceType {
 function Home() {
     const friends = useSelector(selectFriends)
     const user = useSelector(selectUser)
+    const userDataState = useSelector(selectUserState)
     const friendsState = useSelector(selectFriendsState)
     const dispatch = useDispatch<AppDispatch>()
+    const showLoading = userDataState !== DataState.FULFILLED || userDataState !== DataState.FULFILLED || friends === null
 
     useEffect(() => {
         if (friendsState === DataState.INITIAL && user) {
             dispatch(getFriendRequests(user))
         }
-        if (friendsState === DataState.FULFILLED && friends.length > 0) {
-            dispatch(setActiveExpenseList(friends[0].id))
+        if (friendsState === DataState.FULFILLED && friends && friends.length > 0) {
+            dispatch(setActiveExpenseList(friends?.[0].id))
         }
     }, [])
+
+    if (showLoading) return <LoadingOverlay
+    visible={true}
+    zIndex={1000}
+    overlayProps={{ radius: 'sm', blur: 2 }}
+    loaderProps={{children: <LoadingHourglass/>}}
+    // loaderProps={{ children: <SparklesText sparklesCount={8} className="loginText" text="Loading..." />}}
+    />;
+
     return (
         <>
             <div className={`flex p-5 gap-5 w-full ${friends.length > 0 ? 'justify-between' : 'justify-center'}`} style={{ height: '98vh', overflow: 'hidden' }}>
