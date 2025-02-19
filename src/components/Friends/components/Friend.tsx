@@ -1,6 +1,6 @@
 import { FriendSourceType } from "@/components/Home/Home";
-import { setActiveExpenseList } from "@/slices/friendsSlice";
-import { selectUser } from "@/slices/userSlice";
+import { deleteFriend, setActiveExpenseList } from "@/slices/friendsSlice";
+import { selectUser, settleUpExpenses } from "@/slices/userSlice";
 import { User } from "@/types";
 import { friendOwingDiff } from "@/utils/friendHelpers";
 import { AdvancedImage } from "@cloudinary/react";
@@ -8,21 +8,30 @@ import { outline } from "@cloudinary/url-gen/actions/effect";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { byRadius } from "@cloudinary/url-gen/actions/roundCorners";
 import { Cloudinary } from "@cloudinary/url-gen/instance/Cloudinary";
-import { Button } from "@mantine/core";
+import { Modal, Button } from "@mantine/core";
 import { useDispatch, useSelector } from "react-redux";
 import PriceDiff from "./PriceDiff";
+import { useState } from "react";
+import { AppDispatch } from "@/utils/store";
+
 
 function Friend({ friend, sourceType, handleOpenExpenseModal }: { friend: User, sourceType: FriendSourceType, handleOpenExpenseModal: (friend: User) => void }) {
         const user = useSelector(selectUser)
-        const dispatch = useDispatch()
+        const dispatch = useDispatch<AppDispatch>()
+        const [showSettleUpModal, setShowSettleUpModal] = useState(false);
+        const [showRemoveFriendModal, setShowRemoveFriendModal] = useState(false);
         const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUD_PROFILE, } }).image(friend.photo).resize(fill().width(100).height(100)).roundCorners(byRadius(100)).effect(outline().color("grey"))
         const friendDiff = friendOwingDiff(user, user.expenses, friend)
         const noExpenses = friendDiff.totalSpent === 0
 
-        const handleAddActiveFriendList = (friendId: string) => {
-                dispatch(setActiveExpenseList(friendId))
+        const handleUserSettleUp = () => {
+                dispatch(settleUpExpenses({expenses: user.expenses, friendId: friend.id, userId: user.id}))
+                setShowSettleUpModal(false)
         }
-
+        const handleRemoveUserFriend = () => {
+                dispatch(deleteFriend({friendId: friend.id, userId: user.id}))
+                setShowRemoveFriendModal(false)
+        }
         return (
                 <div>
                         <div className="flex items-center justify-between">
@@ -48,7 +57,7 @@ function Friend({ friend, sourceType, handleOpenExpenseModal }: { friend: User, 
                                         size="sm"
                                         color="yellow"
                                         disabled={noExpenses}
-                                        onClick={() => handleAddActiveFriendList(friend.id)}
+                                        onClick={() => dispatch(setActiveExpenseList(friend.id))}
                                 >
                                         view expenses
                                 </Button>}
@@ -57,6 +66,7 @@ function Friend({ friend, sourceType, handleOpenExpenseModal }: { friend: User, 
                                         size="sm"
                                         color="orange"
                                         disabled={noExpenses}
+                                        onClick={()=>setShowSettleUpModal(true)}
                                 >
                                         settle up
                                 </Button>
@@ -64,10 +74,38 @@ function Friend({ friend, sourceType, handleOpenExpenseModal }: { friend: User, 
                                         style={{ border: '1px solid grey' }}
                                         size="sm"
                                         color="pink"
+                                        onClick={()=>setShowRemoveFriendModal(true)}
+
                                 >
                                         remove friend
                                 </Button>}
                         </div>
+                        <Modal opened={showSettleUpModal} onClose={() => setShowSettleUpModal(false)} title={`Settle up with ${friend.username}?`}>
+                                <div style={{display:'flex', flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
+                                        <h2>All expenses will be removed (forever)</h2>
+                                        <div style={{display:'flex', gap:'10px', marginTop:'10px'}}>
+                                        <Button color="red" onClick={() => setShowSettleUpModal(false)}>
+                                                No
+                                        </Button>
+                                        <Button color="green" onClick={handleUserSettleUp}>
+                                                Yes
+                                        </Button>
+                                        </div>
+                                </div>
+                        </Modal>
+                        <Modal opened={showRemoveFriendModal} onClose={() => setShowRemoveFriendModal(false)} title={`Remove Friend: ${friend.username}.`}>
+                                <div style={{display:'flex', flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
+                                        <h2>This will remove the user and all expenses with that user.</h2>
+                                        <div style={{display:'flex', gap:'10px', marginTop:'10px'}}>
+                                        <Button color="red" onClick={() => setShowRemoveFriendModal(false)}>
+                                                No
+                                        </Button>
+                                        <Button color="green" onClick={handleRemoveUserFriend}>
+                                                Yes
+                                        </Button>
+                                        </div>
+                                </div>
+                        </Modal>
                 </div>
         )
 }

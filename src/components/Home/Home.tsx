@@ -21,13 +21,12 @@ function Home() {
     const userDataState = useSelector(selectUserState)
     const friendsState = useSelector(selectFriendsState)
     const dispatch = useDispatch<AppDispatch>()
-    const showLoading = userDataState !== DataState.FULFILLED || userDataState !== DataState.FULFILLED || friends === null
-
+    const showLoading = userDataState === DataState.LOADING
     useEffect(() => {
-        if (friendsState === DataState.INITIAL && user) {
+        if (friendsState === DataState.INITIAL && user.id) {
             dispatch(getFriendRequests(user))
         }
-        if (friendsState === DataState.FULFILLED && friends && friends.length > 0) {
+    if (friendsState === DataState.FULFILLED && friends && friends.length > 0) {
             dispatch(setActiveExpenseList(friends?.[0].id))
         }
     }, [])

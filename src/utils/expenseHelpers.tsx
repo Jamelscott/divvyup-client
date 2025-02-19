@@ -1,3 +1,4 @@
+import { notifications } from '@mantine/notifications';
 import { supabase } from '../supabase';
 import { ExpenseData, User, AddExpense } from '../types';
 
@@ -116,5 +117,47 @@ export const handleEditExpense = async (newExpenseData: ExpenseData, expenseId: 
     }
     if (data) {
         return data[0] as ExpenseData
+    }
+}
+
+export const handleSettleUp = async (expenses: ExpenseData[], friendId:string) => {
+    const sharedExpenses = expenses.filter((expense) => expense.lender === friendId || expense.ower === friendId).map((expense)=> {
+        return {
+            id:expense.id,
+            name: expense.name,
+            type: expense.type,
+            lender: expense.lender,
+            ower: expense.ower,
+            quantity: expense.quantity,
+            splitpercentage: expense.splitpercentage,
+        }
+    })
+    const { error } = await supabase
+        .from('expense_archive')
+        .insert(sharedExpenses)
+        .select()
+    if (error) {
+        notifications.show({
+            title: 'Failed to settle up',
+            message: error.message,
+            color: 'grape',
+            withBorder: true,
+            radius: "md",
+        })
+        return
+    } else {
+        const { error } = await supabase
+            .from('expenses')
+            .delete()
+            .eq('id', [sharedExpenses.map((expense) => expense.id)])
+        if (error) {
+            notifications.show({
+                title: 'Failed to delete expenses',
+                message: 'not sure why..',
+                color: 'grape',
+                withBorder: true,
+                radius: "md",
+            })
+        }
     }
 }

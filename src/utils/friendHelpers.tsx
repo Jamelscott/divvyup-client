@@ -15,6 +15,16 @@ export const handleRequestFriend = async (usernameOrEmail: string, user: User) =
     const isEmail = usernameOrEmail.includes('@');
     const { id: userId, username } = user;
 
+    if (usernameOrEmail === user.username || usernameOrEmail === user.email) {
+        notifications.show({
+            title: 'Friend Request Failed',
+            message: 'you cannot add yourself',
+            color: 'grape',
+            withBorder: true,
+            radius: "md",
+        })
+        return 
+    }
     if (isEmail) {
         try {
             const newFriend = await supabase
@@ -105,7 +115,7 @@ export const fetchFriendRequests = async (user: User): Promise<FriendRequest[]> 
     return pendingRequests as FriendRequest[];
 };
 
-export const acceptFriendRequest = async (requestId: string): Promise<FriendRequest> => {
+export const acceptFriendRequest = async (requestId: string): Promise<FriendRequest | void> => {
     const { data: newFriendData, error } = await supabase
         .from('friends')
         .update({ type: 'complete' })
@@ -114,6 +124,7 @@ export const acceptFriendRequest = async (requestId: string): Promise<FriendRequ
 
     if (error) {
         console.log(error);
+        return
     }
     return newFriendData as any;
 };

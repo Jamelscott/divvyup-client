@@ -2,8 +2,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { supabase } from '../../supabase';
 import './signup.css';
-import { User, UserSignUp } from '../../types';
-import { userBuilder } from '../../utils/loginHelpers';
+import { UserSignUp } from '../../types';
+import { userBuilder } from '../../utils/userHelpers';
 import { NeonGradientCard } from '../magicui/neon-gradient-card';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/slices/userSlice';
@@ -67,7 +67,6 @@ function SignUp() {
             }
 
             const newUser = userBuilder(data.user as any);
-            setUser(newUser);
             console.log(newUser);
             navigate('/');
         }

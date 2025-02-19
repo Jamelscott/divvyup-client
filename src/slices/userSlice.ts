@@ -1,8 +1,8 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ExpenseData, GenericDataState, User, UserLogin, AddExpense } from "../types";
-import { handleDeleteUserExpenseSession, handleLogout, handleUpdateUserExpenseSession, handleUserSession, loginEmailOrUsername } from "../utils/loginHelpers";
+import { handleDeleteUserExpenseSession, handleLogout, handleUpdateUserExpenseSession, handleUserSession, loginEmailOrUsername } from "../utils/userHelpers";
 import { RootState } from "../utils/store";
-import { handleAddExpense, handleDeleteExpense, handleEditExpense, handleFetchSingleProfileExpenses } from "../utils/expenseHelpers";
+import { handleAddExpense, handleDeleteExpense, handleEditExpense, handleFetchSingleProfileExpenses, handleSettleUp } from "../utils/expenseHelpers";
 import { uploadProfilePhoto } from "../utils/profileHelper";
 import { supabase } from "../supabase";
 
@@ -120,6 +120,36 @@ export const deleteExpense = createAsyncThunk(
 		} catch (err) {
 			console.error(err)
 			return thunkApi.rejectWithValue('error');
+		}
+	}
+)
+
+export const settleUpExpenses = createAsyncThunk(
+	'user/delete/expenses',
+	async(params: {expenses:ExpenseData[], friendId:string, userId: string}, thunkApi) => {
+		const {expenses, friendId, userId} = params;
+		try {
+			await handleSettleUp(expenses, friendId)
+		} catch (err) {
+			console.log(err)
+			return thunkApi.rejectWithValue('error settling up')
+		}
+		try {
+			const userExpenses = await handleFetchSingleProfileExpenses(userId)
+			const userString = sessionStorage.getItem('user');
+	
+			if (userString === null) throw new Error('user not initiated');
+			const userInStorage = JSON.parse(userString);
+
+			const user = {
+				...userInStorage, expenses: userExpenses
+			} as User;
+			sessionStorage.setItem('user', JSON.stringify(user));
+
+			return user
+		} catch (err) {
+			console.log(err)
+			return thunkApi.rejectWithValue('error fetching user expenses')
 		}
 	}
 )
@@ -320,6 +350,22 @@ const userSlice = createSlice({
 				}
 			)
 			.addCase(editExpense.rejected, (state, action) => {
+				if (action.payload) {
+					state.error = action.payload;
+				} else {
+					state.error = 'err';
+				}
+				state.dataState = DataState.ERROR;
+			})
+			.addCase(settleUpExpenses.pending, (state) => {
+				state.dataState = DataState.LOADING;
+			})
+			.addCase(
+				settleUpExpenses.fulfilled, (state, action) => {
+					state.data = action.payload ?? ({} as User);
+					state.dataState = DataState.FULFILLED;				
+			})
+			.addCase(settleUpExpenses.rejected, (state, action) => {
 				if (action.payload) {
 					state.error = action.payload;
 				} else {

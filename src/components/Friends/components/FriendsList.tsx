@@ -1,5 +1,5 @@
 import { selectUser } from "../../../slices/userSlice";
-import { DataState, getFriends, selectFriends, selectFriendsState } from "../../../slices/friendsSlice";
+import { DataState, getFriendRequests, getFriends, selectFriends, selectFriendsState } from "../../../slices/friendsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { AppDispatch } from "../../../utils/store";
@@ -21,6 +21,7 @@ function FriendsList({ sourceType }: { sourceType: FriendSourceType }) {
         useEffect(() => {
                 if (user.id && friendsDataState === DataState.INITIAL) {
                         dispatch(getFriends(user.id))
+                        dispatch(getFriendRequests(user))
                 }
         }, [user])
 
@@ -35,7 +36,7 @@ function FriendsList({ sourceType }: { sourceType: FriendSourceType }) {
                         <div className="flex flex-col items-center gap-5 bg-white rounded-3xl border-black border p-2.5 shadow-lg w-full overflow-y-scroll" style={{ height: '100%' }}>
                                 <h2><b>Friends</b></h2>
                                 <div className="h-full overflow-y-scroll w-full p-5" style={{ height: 'fit-content' }}>
-                                        {user.expenses && friends?.map((friend, idx) => <Friend key={friend.id} handleOpenExpenseModal={handleOpenExpenseModal} friend={friend} sourceType={sourceType} />)}
+                                        {user.expenses && friends?.map((friend) => <Friend key={friend.id} handleOpenExpenseModal={handleOpenExpenseModal} friend={friend} sourceType={sourceType} />)}
                                 </div>
                         </div >
                         <Modal opened={opened} onClose={close} size='xl' title="Add an Expense">

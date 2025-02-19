@@ -2,9 +2,8 @@ import FriendRequests from './components/FriendRequests';
 import FriendsList from './components/FriendsList';
 import ExpenseList, { ExpenseListType } from '../Expenses/ExpenseList';
 import { useDispatch, useSelector } from 'react-redux';
-import { DataState, getFriendRequests, selectFriends, selectFriendsState, setActiveExpenseList } from '@/slices/friendsSlice';
+import { DataState, selectFriends, selectFriendsState, setActiveExpenseList } from '@/slices/friendsSlice';
 import { useEffect } from 'react';
-import { selectUser } from '@/slices/userSlice';
 import { AppDispatch, RootState } from '@/utils/store';
 import { FriendSourceType } from '../Home/Home';
 import { ExpenseData } from '@/types';
@@ -21,18 +20,13 @@ function Friends() {
         )
         const friendsState = useSelector(selectFriendsState)
         const friends = useSelector(selectFriends)
-        const user = useSelector(selectUser)
         const dispatch = useDispatch<AppDispatch>()
 
         useEffect(() => {
-                if (friendsState === DataState.INITIAL && user.id) {
-                        dispatch(getFriendRequests(user))
-                }
                 if (friendsState === DataState.FULFILLED && friends.length > 0) {
                         dispatch(setActiveExpenseList(friends[0].id))
                 }
         }, [friendsState])
-
         return (
                 <>
                         <div className='flex justify-between p-5 gap-5 w-full' style={{ height: '98vh', overflow: 'hidden' }}>

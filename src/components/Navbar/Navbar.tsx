@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { handleLogout, handleUserSession } from '../../utils/loginHelpers';
+import { handleLogout, handleUserSession } from '../../utils/userHelpers';
 import { User } from '../../types';
 import { useContext, useState } from 'react';
 import { UserContext, UserContextType } from '../../context/userContext';

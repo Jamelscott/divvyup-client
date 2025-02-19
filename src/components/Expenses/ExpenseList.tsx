@@ -26,7 +26,7 @@ function ExpenseList({ sourceType, friendExpenses }: { friendExpenses?: ExpenseD
                 <div className="flex flex-col gap-5 items-center w-full bg-white shadow-lg rounded-xl border border-black p-3" style={{ height: '100%' }}>
                         {header}
                         <div className="flex p-3 flex-col gap-5 w-full h-full overflow-y-scroll" style={{ height: 'fit-content' }}>
-                                {renderedExpenses.length > 0 ? renderedExpenses.map((expense: any, i) => {
+                                {renderedExpenses.length > 0 ? renderedExpenses.map((expense: ExpenseData, i) => {
                                         return <Expense key={`${expense} ${i}`} expense={expense} sourceType={sourceType} />
                                 }) : <>You have no expenses</>}
                         </div>

@@ -2,6 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { FriendRequest, FriendSliceData, GenericDataState, User } from "../types";
 import { RootState } from "../utils/store";
 import { acceptFriendRequest, deleteFriendRequest, fetchFriendRequests, fetchFriends, handleRequestFriend } from "../utils/friendHelpers";
+import { handleRemoveFriend } from "@/utils/userHelpers";
 
 export enum DataState {
         INITIAL,
@@ -20,14 +21,34 @@ export const getFriends = createAsyncThunk(
         }
 );
 
+export const deleteFriend = createAsyncThunk(
+        'friend/delete',
+        async (params: {userId: string, friendId:string}, thunkApi) => {
+                try {
+                        const {userId, friendId} = params;
+                        await handleRemoveFriend(userId, friendId);
+                        const friends = await fetchFriends(userId);
+                        return friends
+                } catch (err) {
+                        return thunkApi.rejectWithValue('error');
+
+                }
+        }
+);
+
 export const getFriendRequests = createAsyncThunk(
         'friends/get/fetchFriendRequests',
         async (user: User, thunkApi) => {
+        try {
                 const friendRequests = await fetchFriendRequests(user);
                 if (!friendRequests) {
                         return [];
                 }
                 return friendRequests;
+        } catch (err) {
+                return thunkApi.rejectWithValue('error');
+
+        }
         }
 );
 
@@ -68,7 +89,7 @@ export const approveFriendRequest = createAsyncThunk(
 
 const initialState: GenericDataState<FriendSliceData> = {
         data: {
-                friends: null,
+                friends: [],
                 friendRequests: [],
                 activeList: null,
         },
@@ -162,6 +183,21 @@ const friendsSlice = createSlice({
                                 state.dataState = DataState.FULFILLED;
                         })
                         .addCase(approveFriendRequest.rejected, (state, action) => {
+                                if (action.payload) {
+                                        state.error = action.payload;
+                                } else {
+                                        state.error = 'err';
+                                }
+                                state.dataState = DataState.ERROR;
+                        })
+                        .addCase(deleteFriend.pending, (state) => {
+                                state.dataState = DataState.LOADING;
+                        })
+                        .addCase(deleteFriend.fulfilled, (state, action) => {
+                                state.data.friends = action.payload ?? [];
+                                state.dataState = DataState.FULFILLED;
+                        })
+                        .addCase(deleteFriend.rejected, (state, action) => {
                                 if (action.payload) {
                                         state.error = action.payload;
                                 } else {

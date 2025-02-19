@@ -43,7 +43,7 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
         if (isEmail) {
                 const response = await supabase.auth.signInWithPassword({ email: usernameOrEmail, password: password });
                 if (response.error) {
-                    notifications.show(errorNotification('Friend Request Fail','That user may not exist'))
+                    notifications.show(errorNotification('Failed to login','login info is incorrect'))
                     throw new Error(response.error.message)
                 };
                 if (response.data.user) {
@@ -141,4 +141,22 @@ export const handleGetUserById = async (userId: string): Promise<User> => {
     const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
     if (error) throw new Error('cannot find user')
     return data;
+};
+export const handleRemoveFriend = async (userId: string, friendId:string) => {
+    // First delete operation
+    const { error: error1 } = await supabase
+    .from('friends')
+    .delete()
+    .eq('requester_uuid', userId)
+    .eq('requestee_uuid', friendId);
+
+    // Second delete operation
+    if (error1){
+        const { error: error2 } = await supabase
+        .from('friends')
+        .delete()
+        .eq('requester_uuid', friendId)
+        .eq('requestee_uuid', userId); 
+        if (error2) throw new Error('cannot remove friend')
+    }
 };

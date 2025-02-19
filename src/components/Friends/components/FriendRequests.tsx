@@ -1,23 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
-import { DataState, selectUser, selectUserState } from "../../../slices/userSlice";
-import { approveFriendRequest, getFriendRequests, rejectFriendRequest, selectFriendRequests } from "../../../slices/friendsSlice";
+import { selectUser } from "../../../slices/userSlice";
+import { approveFriendRequest, rejectFriendRequest, selectFriendRequests } from "../../../slices/friendsSlice";
 import { AppDispatch } from "../../../utils/store";
 import { Button } from "@mantine/core";
 import FriendRequestForm from "./FriendRequestForm";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Hr from "@/components/utils/Hr";
 
 function FriendRequests() {
 	const user = useSelector(selectUser)
-	const userDataState = useSelector(selectUserState)
 	const friendRequests = useSelector(selectFriendRequests)
 	const [openForm, setOpenForm] = useState(false)
 
 	const dispatch = useDispatch<AppDispatch>()
-
-	useEffect(() => {
-		if (user.id && userDataState === DataState.INITIAL) dispatch(getFriendRequests(user))
-	}, [userDataState])
 
 	const handleRejectRequest = (requestId: string) => {
 		dispatch(rejectFriendRequest(requestId))

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DataState, selectUser, selectUserState, userSession } from './slices/userSlice.ts';
 import { useEffect, useState } from 'react';
 import { User } from './types';
-import { getFriends, selectFriendsState } from './slices/friendsSlice.ts';
+import { getFriendRequests, getFriends, selectFriendsState } from './slices/friendsSlice.ts';
 import { AppDispatch } from './utils/store.ts';
 import { FloatingNav } from './components/Navbar/FloatingNav.tsx';
 import './globals.css'
@@ -33,6 +33,7 @@ function App() {
         if (user.id) {
             setCurrentUser(user)
             dispatch(getFriends(user.id))
+            dispatch(getFriendRequests(user))
         }
 
     }, [userDataState])
@@ -50,13 +51,13 @@ function App() {
                {isLoggingIn &&  <LoadingOverlay
                 visible={true}
                 zIndex={1000}
-                overlayProps={{ radius: 'sm', blur: 2 }}
+                overlayProps={{ radius: 'sm', blur: 2, color:'none' }}
                 loaderProps={{children: <LoadingHourglass/>}}
                 // loaderProps={{ children: <SparklesText sparklesCount={8} className="loginText" text="Loading..." />}}
                 />}
                 {!!user?.username && <FloatingNav />}                {/* {errorMsg?.length > 0 && <ErrorMsg />} */}
                 <Routes>
-                    <Route path='/' element={user.id || (!isInitializing || !isLoading) ? <Home /> : <Login setIsLoggingIn={setIsLoggingIn} />} />
+                    <Route path='/' element={user.id ? <Home /> : <Login setIsLoggingIn={setIsLoggingIn} />} />
                     <Route path='/analytics' element={<Analytics />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/friends' element={<Friends />} />

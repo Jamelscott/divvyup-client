@@ -63,7 +63,7 @@ export type ExpenseType = 'dining out' | 'grocery' | 'household' | 'misc' | 'mor
 
 export type FriendSliceData = {
     friendRequests: FriendRequest[],
-    friends: User[] | null;
+    friends: User[];
     activeList: string | null;
 }
 
