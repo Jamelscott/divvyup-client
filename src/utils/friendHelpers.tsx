@@ -120,13 +120,15 @@ export const acceptFriendRequest = async (requestId: string): Promise<FriendRequ
         .from('friends')
         .update({ type: 'complete' })
         .eq('id', requestId)
-        .select();
+        .select()
 
     if (error) {
         console.log(error);
         return
     }
-    return newFriendData as any;
+    if (newFriendData) {
+        return newFriendData[0] as FriendRequest;
+    }
 };
 
 export const deleteFriendRequest = async (requestId: string) => {

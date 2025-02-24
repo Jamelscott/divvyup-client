@@ -151,12 +151,10 @@ export const handleRemoveFriend = async (userId: string, friendId:string) => {
     .eq('requestee_uuid', friendId);
 
     // Second delete operation
-    if (error1){
-        const { error: error2 } = await supabase
+    const { error: error2 } = await supabase
         .from('friends')
         .delete()
         .eq('requester_uuid', friendId)
         .eq('requestee_uuid', userId); 
-        if (error2) throw new Error('cannot remove friend')
-    }
+    if (error2 || error1) throw new Error('cannot remove friend')
 };

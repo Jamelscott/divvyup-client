@@ -18,7 +18,7 @@ function FriendRequests() {
 		dispatch(rejectFriendRequest(requestId))
 	}
 	const handleAcceptRequest = (id: string) => {
-		dispatch(approveFriendRequest(id))
+		dispatch(approveFriendRequest({requestId:id, userId: user.id}))
 	}
 	return <>
 		<div className=" flex flex-col gap-5 items-center bg-white md:shadow-xl border rounded-3xl border border-black p-5 w-fit">

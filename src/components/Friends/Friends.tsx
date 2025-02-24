@@ -3,12 +3,13 @@ import FriendsList from './components/FriendsList';
 import ExpenseList, { ExpenseListType } from '../Expenses/ExpenseList';
 import { useDispatch, useSelector } from 'react-redux';
 import { DataState, selectFriends, selectFriendsState, setActiveExpenseList } from '@/slices/friendsSlice';
-import { useEffect } from 'react';
 import { AppDispatch, RootState } from '@/utils/store';
 import { FriendSourceType } from '../Home/Home';
 import { ExpenseData } from '@/types';
+import { useNavigate } from 'react-router-dom';
 
 function Friends() {
+        const navigate = useNavigate();
         const emptyArray: ExpenseData[] = []
         const activeExpenseList = useSelector(
                 (state: RootState) => {
@@ -22,11 +23,16 @@ function Friends() {
         const friends = useSelector(selectFriends)
         const dispatch = useDispatch<AppDispatch>()
 
-        useEffect(() => {
+        // useEffect(() => {
                 if (friendsState === DataState.FULFILLED && friends.length > 0) {
-                        dispatch(setActiveExpenseList(friends[0].id))
+                        const filterOutNoExpensesFriend = friends.filter((friend) => friend.expenses && friend.expenses.length > 0)
+                        
+                        filterOutNoExpensesFriend.length > 0 && dispatch(setActiveExpenseList(filterOutNoExpensesFriend[0].id))
                 }
-        }, [friendsState])
+        // }, [friendsState])
+if (friends.length === 0) {
+        navigate('/')
+}
         return (
                 <>
                         <div className='flex justify-between p-5 gap-5 w-full' style={{ height: '98vh', overflow: 'hidden' }}>

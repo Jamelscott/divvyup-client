@@ -8,16 +8,18 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { byRadius } from "@cloudinary/url-gen/actions/roundCorners";
 import SparklesText from "../magicui/sparkles-text";
 import { outline } from "@cloudinary/url-gen/actions/effect";
+import { selectFriends } from "@/slices/friendsSlice";
 
 function ProfileData() {
         const user = useSelector(selectUser)
         const expenses = useSelector(selectExpenses)
         const expenseDiff = useMemo(() => calcTotalExpenseDiff(expenses, user), [expenses])
+        const friends = useSelector(selectFriends)
 
         const getTotalNum = (num: number) => {
                 return Number(Math.round(parseFloat(Math.abs(num) + 'e' + 2)) + 'e-' + 2).toFixed(2);
         }
-        const checkOwing = () => {
+        const checkOwing = useMemo(() => {
                 if (expenseDiff > 0) {
                         return <h3 style={{ color: 'green' }}>Overall, you are owed ${expenseDiff.toFixed(2)}</h3>
                 } else if (expenseDiff < 0) {
@@ -27,7 +29,7 @@ function ProfileData() {
                 } else {
                         return <></>
                 }
-        }
+        }, [friends])
         const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUD_PROFILE, } }).image(user.photo).resize(fill().width(100).height(100)).roundCorners(byRadius(100)).effect(outline().color("grey"))
         const adjsutedName = user.username.replace(user.username.charAt(0), user.username.charAt(0).toUpperCase())
         return (
@@ -38,7 +40,7 @@ function ProfileData() {
                                         <SparklesText sparklesCount={4} className="loginText" text={adjsutedName} />
                                 </div>
                                 <div>
-                                        {checkOwing()}
+                                        {checkOwing}
                                 </div>
                         </div>
                 </div>

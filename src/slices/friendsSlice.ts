@@ -3,6 +3,7 @@ import { FriendRequest, FriendSliceData, GenericDataState, User } from "../types
 import { RootState } from "../utils/store";
 import { acceptFriendRequest, deleteFriendRequest, fetchFriendRequests, fetchFriends, handleRequestFriend } from "../utils/friendHelpers";
 import { handleRemoveFriend } from "@/utils/userHelpers";
+import { updateExpenses } from "./userSlice";
 
 export enum DataState {
         INITIAL,
@@ -28,6 +29,8 @@ export const deleteFriend = createAsyncThunk(
                         const {userId, friendId} = params;
                         await handleRemoveFriend(userId, friendId);
                         const friends = await fetchFriends(userId);
+                        // update expenses to remove those of the removed friend
+                        thunkApi.dispatch(updateExpenses(friendId));
                         return friends
                 } catch (err) {
                         return thunkApi.rejectWithValue('error');
@@ -77,12 +80,17 @@ export const rejectFriendRequest = createAsyncThunk(
 
 export const approveFriendRequest = createAsyncThunk(
         'friends/put/fetchFriendRequest',
-        async (requestId: string, thunkApi) => {
+        async (params:{requestId: string, userId: string}, thunkApi) => {
+                const {requestId, userId} = params;
                 const approvedRequest = await acceptFriendRequest(requestId);
                 if (!approvedRequest) {
                         return thunkApi.rejectWithValue('error');
                 }
-                return approvedRequest;
+                const newFriendsList = await fetchFriends(userId);
+                return {
+                        friendRequestId: approvedRequest.id,
+                        newFriendsList
+                };
         }
 );
 
@@ -177,9 +185,9 @@ const friendsSlice = createSlice({
                         .addCase(approveFriendRequest.pending, (state) => {
                                 state.dataState = DataState.LOADING;
                         })
-                        .addCase(approveFriendRequest.fulfilled, (state, action: PayloadAction<FriendRequest>) => {
-                                const index = state.data.friendRequests.map((request) => request.id).indexOf(action.payload.id)
-                                state.data.friendRequests.splice(index, 1, action.payload)
+                        .addCase(approveFriendRequest.fulfilled, (state, action: PayloadAction<any>) => {
+                                state.data.friendRequests = state.data.friendRequests.filter((request) => request.id !== action.payload.friendRequestId);
+                                state.data.friends = action.payload.newFriendsList
                                 state.dataState = DataState.FULFILLED;
                         })
                         .addCase(approveFriendRequest.rejected, (state, action) => {
@@ -195,6 +203,7 @@ const friendsSlice = createSlice({
                         })
                         .addCase(deleteFriend.fulfilled, (state, action) => {
                                 state.data.friends = action.payload ?? [];
+                                // state.user.expenses = state.user.expenses.filter((expense) => expense.lender !==  )
                                 state.dataState = DataState.FULFILLED;
                         })
                         .addCase(deleteFriend.rejected, (state, action) => {

@@ -51,7 +51,7 @@ export const getUserById = createAsyncThunk(
 );
 export const getActiveSession = createAsyncThunk(
 	'user/get/getActiveSession',
-	async (thunkApi) => {
+	async () => {
 		const session = await supabase.auth.getSession()
 		if (!session || !session.data.session) {
 			return null
@@ -63,6 +63,9 @@ export const getActiveSession = createAsyncThunk(
 			.select('*')
 			.eq('id', id)
 			.single()
+		if (error){
+			console.log(error)
+		}
 		const userExpenses = await handleFetchSingleProfileExpenses(id as any)
 
 		const userSessionData: User = {
@@ -207,6 +210,20 @@ const userSlice = createSlice({
 				state.dataState = DataState.INITIAL;
 			}
 		},
+		updateExpenses(state, action){
+			const updatedExpenseList = state.data.expenses.filter((expense) => expense.lender !== action.payload && expense.ower !== action.payload)
+			state.data.expenses = updatedExpenseList
+			const storageUser = sessionStorage.getItem('user')
+			if (storageUser) {
+				sessionStorage.setItem('user', JSON.stringify({
+					...JSON.parse(storageUser),
+					expenses: updatedExpenseList
+				}));
+			} else {
+				throw new Error('error finding user in session storage')
+			}
+
+		}
 	},
 	extraReducers: (builder) => {
 		builder
@@ -378,7 +395,7 @@ const userSlice = createSlice({
 
 export default userSlice.reducer;
 
-export const { userSession } = userSlice.actions;
+export const { userSession, updateExpenses } = userSlice.actions;
 
 export const selectUserState = (state: RootState) =>
 	state.user.dataState;
