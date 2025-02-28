@@ -13,12 +13,12 @@ import { getFriendRequests, getFriends, selectFriendsState } from './slices/frie
 import { AppDispatch } from './utils/store.ts';
 import { FloatingNav } from './components/Navbar/FloatingNav.tsx';
 import './globals.css'
-import DotPattern from './components/magicui/dot-pattern.tsx';
 import LoadingHourglass from './components/Loading/LoadingHourglass.tsx';
 // import Friend from './components/Friends/components/Friend.tsx';
 import '@mantine/core/styles.css';
 import { LoadingOverlay, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
+import Landing from './InProgress/Landing.tsx';
 
 function App() {
     const userDataState = useSelector(selectUserState)
@@ -45,19 +45,22 @@ function App() {
 
 
     return (
-        <MantineProvider>
+        <MantineProvider defaultColorScheme="dark" >
             <BrowserRouter>
-            <DotPattern />
-               {isLoggingIn &&  <LoadingOverlay
+            {/* <DotPattern /> */}
+               {isLoggingIn  &&  <LoadingOverlay
                 visible={true}
                 zIndex={1000}
-                overlayProps={{ radius: 'sm', blur: 2, color:'none' }}
+                overlayProps={{ radius: 'sm', blur: 100, color:'none' }}
                 loaderProps={{children: <LoadingHourglass/>}}
                 // loaderProps={{ children: <SparklesText sparklesCount={8} className="loginText" text="Loading..." />}}
                 />}
                 {!!user?.username && <FloatingNav />}                {/* {errorMsg?.length > 0 && <ErrorMsg />} */}
+                {isLoading && <LoadingHourglass />}
                 <Routes>
-                    <Route path='/' element={user.id ? <Home /> : <Login setIsLoggingIn={setIsLoggingIn} />} />
+                    <Route path='/' element={<Landing />} />
+                    <Route path='/home' element={<Home /> } />
+                    <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn} />} />
                     <Route path='/analytics' element={<Analytics />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/friends' element={<Friends />} />
@@ -65,7 +68,6 @@ function App() {
                     <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn}/>} />
                     <Route path='/signup' element={<SignUp />} />
                 </Routes>
-                {isLoading && <LoadingHourglass />}
                 <Notifications color="grape" className='w-fit absolute bottom-10 right-5' />
             </BrowserRouter>
         </MantineProvider>

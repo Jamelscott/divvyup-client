@@ -18,6 +18,7 @@
     "@radix-ui/react-accordion": "^1.2.0",
     "@reduxjs/toolkit": "^2.2.6",
     "@supabase/supabase-js": "^2.39.8",
+    "@tabler/icons-react": "^3.30.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
