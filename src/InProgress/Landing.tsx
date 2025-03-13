@@ -1,129 +1,83 @@
-import { Button, PasswordInput, Popover, TextInput } from "@mantine/core"
-
+import { Button, Popover } from "@mantine/core"
 import holdingApp from "../../public/holdingApp.png"
 import googlePlayIcon from "../../public/googlePlayButton.png"
 import appStoreIcon from "../../public/appStoreButton.png"
 import progressiveIcon from "../../public/pwa.png"
-import { useDisclosure } from "@mantine/hooks"
 import { useState } from "react"
 import LoginForm from "./LoginForm/LoginForm"
 import SignUpForm from "./SignUpForm/SignUpFormx.tsx"
-import Login from "@/components/Login/Login.tsx"
+import { NavbarMinimal } from "./Navbar/Navbar.tsx"
 
-const Landing = () => {
-	const [visible, { toggle }] = useDisclosure(false);
-	const [visibleConfirm, { toggle:toggleConfirm }] = useDisclosure(false);
-	const [openSignUp, setOpenSignUp] = useState(true)
+const Landing = ({setIsLoggingIn}: {setIsLoggingIn: (val:boolean) => void}) => {
+	const [openSignUp, setOpenSignUp] = useState(false)
 	const [openLogin, setOpenLogin] = useState(false)
 
+	const closeBothForms = () => {
+		openSignUp && setOpenSignUp(false)
+		openLogin && setOpenLogin(false)
+	}
         return (
 			<>
-			<div onClick={()=> {
-				openSignUp && setOpenSignUp(false)
-				openLogin && setOpenLogin(false)
-			}} style={{color:'white'}} className="p-10 pb-0 px-40 max-xl:px-8 flex flex-col min-w-sm">
+			<div onClick={()=> closeBothForms()} className="p-10 pb-0 px-40 max-xl:px-8 flex flex-col min-w-sm text-white">
 				<div className="flex justify-between">
 					<div className="text-5xl">
-							<h1 style={{fontFamily:'Trispace'}} className="text-white font-light">
+							<h1 className="text-white font-light font-[Trispace]">
 								BILLY
 							</h1>
 					</div>
-					<div style={{fontFamily:'montserrat'}}  className="items-center justify-end gap-5">
-						<div className="hidden md:flex gap-5">
+					<div className="items-center justify-end gap-5 font-[montserrat]">
+						<div className="flex max-[450px]:hidden gap-5">
 							<Popover 
-								width={300}
+								width={250}
 								trapFocus
 								arrowSize={15}
 								position="bottom-start"
 								withArrow
 								arrowPosition="center"
-								offset={10}
+								offset={{ mainAxis:15,crossAxis: -55 }}
 							>
 								<Popover.Target>
-									<Button radius="xs" size="sm" variant="outline" color="white"><span style={{fontSize:'14px'}}>Login</span></Button>
+									<Button radius="xs" size="sm" variant="outline" color="white"><span className="text-[14px]">Login</span></Button>
 								</Popover.Target>
-								<Popover.Dropdown className="hidden md:block" bg="rgba(0, 0, 0, 0.1)">
-									<div className="flex flex-col gap-2">
-										<TextInput labelProps={{color:'white'}} color="white" label="Name" placeholder="Name" size="sm" />
-										<TextInput color="white" label="Email" placeholder="john@doe.com" size="sm"/>
-										<Button className="mt-2" radius="xs" size="sm" variant="default" color="grey"><span style={{fontSize:'14px'}}>Submit</span></Button>
-									</div>
+								<Popover.Dropdown className="flex max-[450px]:hidden" bg="rgb(15, 36, 36)">
+									<LoginForm setOpenLogin={setOpenLogin} setIsLoggingIn={setIsLoggingIn} open={true} mobile={false} />
 								</Popover.Dropdown>
 							</Popover>			
 							<Popover 
-								width={300}
+								width={250}
 								trapFocus
 								arrowSize={15}
-								position="bottom-start"
+								position="bottom-end"
 								withArrow
 								arrowPosition="center"
-								offset={10}
 							>
-								<Popover.Target>
-								<Button radius="xs" size="sm" color="#11B5E4"><span style={{fontSize:'14px'}}>Sign Up</span></Button>
+								<Popover.Target >
+								<Button radius="xs" size="sm" color="#11B5E4"><span className="text-[14px]">Sign Up</span></Button>
 								</Popover.Target>
-								<Popover.Dropdown className="hidden md:block" bg="rgba(0, 0, 0, 0.1)" variant="outline">
-									<div className="flex flex-col gap-2 ">
-										{/* <div className="flex gap-4"> */}
-											<div className="w-full">
-												<TextInput labelProps={{color:'white'}} color="white" label="Username" placeholder="Username" size="sm" />
-											</div>
-											<div className="w-full">
-												<TextInput color="white" label="Email" placeholder="john@doe.com" size="sm" />
-											</div>
-										{/* </div> */}
-										{/* <div className="flex gap-4"> */}
-											<div className="w-full">
-												<PasswordInput
-													label="Password"
-													placeholder="Password"
-													size="sm"
-													color="white"
-													visible={visible}
-													onVisibilityChange={toggle}
-													width={'100%'}
-												/>
-											</div>
-											<div className="w-full">
-												<PasswordInput
-													label="Confirm Password"
-													placeholder="Confirm Password"
-													size="sm"
-													color="white"
-													visible={visibleConfirm}
-													onVisibilityChange={toggleConfirm}
-												/>
-											</div>
-										{/* </div> */}
-										{/* <div className="mt-2"> */}
-											<Button className="mt-2" radius="xs" size="sm" variant="default" color="grey"><span style={{fontSize:'14px'}}>Submit</span></Button>
-										{/* </div> */}
-									</div>
+								<Popover.Dropdown className="flex max-[450px]:hidden" bg="rgb(15, 36, 36)">
+									<SignUpForm mobile={false} open={true} />
 								</Popover.Dropdown>
-							</Popover>										
+							</Popover>	
 						</div>
 					</div>
 				</div>
 				<div className="flex justify-start gap-20 max-lg:flex-col max-xlg:items-start lg:mt-[150px] min-h-[450px]">
 					<div className="flex flex-col gap-5 pt-20 ">
 						<div className="text-7xl max-xl:text-6xl">
-							<p style={{fontFamily:'Exo', paddingBottom:'10px'}}>
+							<p className="font-[Exo] pb-[10px]">
 								Split bills, 
 							</p>
-							<p style={{fontFamily:'Exo'}}>
+							<p className="font=[Exo]">
 								Stay friends.  
 							</p>
 						</div>
-						<div style={{fontFamily:'montserrat'}} className="text-lg">
+						<div className="text-lg font-[montserrat]">
 							<p>From rent to dinner, Billy makes splitting costs<br/> simple and hassle-free.</p>
 						</div>
-						<div className="hidden max-md:flex gap-5">
-							<Button onClick={()=> setOpenLogin(prev => !prev)} radius="xs" size="md" variant="outline" color="white"><span style={{fontSize:'14px'}}>Login</span></Button>
-							<Button onClick={()=> setOpenSignUp(prev => !prev)} radius="xs" size="md" color="#11B5E4"><span style={{fontSize:'14px'}}>Sign Up</span></Button>
+						<div className="hidden max-[450px]:flex gap-5">
+							<Button onClick={()=> setOpenLogin(prev => !prev)} radius="xs" size="md" variant="outline" color="white"><span className="text-[14px]">Login</span></Button>
+							<Button onClick={()=> setOpenSignUp(prev => !prev)} radius="xs" size="md" color="#11B5E4"><span className="text-[14px]">Sign Up</span></Button>
 						</div>
-						{/* <div className="flex max-w-xs cursor-pointer max-xl:items-center">
-							<Button radius="xs" size="xl" color="#11B5E4" fullWidth><span style={{fontSize:'14px'}}>Get Billy for free</span></Button>
-						</div> */}
 						<div className="mt-10">
 							<p className="font-semibold">download the app:</p>
 						</div>
@@ -138,9 +92,13 @@ const Landing = () => {
 					</div>
 				</div>
 			</div>
-                	<SignUpForm open={openSignUp} />
-					<LoginForm open={openLogin} />
-			</>
+			<div className="hidden max-[450px]:flex">
+				<SignUpForm mobile open={openSignUp} />
+			</div>
+			<div className="hidden max-[450px]:flex">
+				<LoginForm mobile setOpenLogin={setOpenLogin} setIsLoggingIn={setIsLoggingIn} open={openLogin} />
+			</div>
+		</>
         )
 }
 

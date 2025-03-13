@@ -1,54 +1,75 @@
-import { Button, Text, TextInput } from "@mantine/core";
+import { selectUser } from "@/slices/userSlice";
+import { UserSignUp } from "@/types";
+import { handleSignUpSubmit } from "@/utils/userHelpers";
+import { Button, PasswordInput, Text, TextInput } from "@mantine/core";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const SignUpForm = ({open}:{open:boolean}) => {
+const SignUpForm = ({open, mobile}:{open:boolean, mobile:boolean}) => {
+        const navigate = useNavigate();
+        const user = useSelector(selectUser)
+        const [signUpCreds, setSignUpCreds] = useState<UserSignUp>({
+            username: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+        });
+    
+        const signUpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            const validSignUp = await handleSignUpSubmit(signUpCreds.username, signUpCreds.email, signUpCreds.password, signUpCreds.confirmPassword, user)
+			if (validSignUp) {
+				navigate('/home');
+			}
+        };
+
+		if (user.id) {
+			navigate('/home')
+		}
+        const canSubmit = !!signUpCreds.username.charAt(3) && !!signUpCreds.password.charAt(4) && !!signUpCreds.email.charAt(4) && !!signUpCreds.confirmPassword.charAt(4) && signUpCreds.password === signUpCreds.confirmPassword
+
         return (
             <form
                 style={{ 
-                    maxHeight: open ? "250px" : "0px",
+                    maxHeight: open ? "420px" : "0px",
+
                 }}
-                className=" shadow-[0px_-10px_20px_rgba(0,0,0,0.5)] hidden max-md:block absolute bg-[#0C1D1A] bottom-0 w-screen overflow-hidden h-full transition-[max-height] duration-300 ease-linear rounded-t-xl"
-                // onSubmit={handleLogin}
-            >
-                <div className="flex flex-col p-3 gap-2 items-center">
-                    <Text size="lg">Sign Up</Text>
-                    <div className="flex gap-5">
-                        <div>
-                                <TextInput labelProps={{color:'white'}} color="white" label="Name" size="sm" 
-                                        placeholder="enter username.."
-                                        // value={signUpCreds.username}
-                                        // onChange={(e) =>
-                                        //     setSignUpCreds({ ...signUpCreds, username: e.target.value })
-                                        // }
-                                />
-                                <TextInput labelProps={{color:'white'}} color="white" label="Email" size="sm" 
-                                        placeholder="enter email.."
-                                        // value={signUpCreds.email}
-                                        // onChange={(e) =>
-                                        //     setSignUpCreds({ ...signUpCreds, email: e.target.value })
-                                        // }
-                                />
+                className={`rounded-t-xl ${mobile && 'shadow-[0px_-10px_20px_rgba(0,0,0,0.5)] max-md:block absolute w-screen max-w-[450px] right-0 bottom-0 overflow-hidden h-full transition-[max-height] duration-300 ease-linear'}`}
+                onSubmit={signUpSubmit}
+                >
+                <div className={`flex flex-col ${mobile && 'bg-[#0F2424] p-6'} gap-2 items-start`} >
+                        <div className="flex justify-center w-full">
+                               {mobile && <Text size="lg">Enter your account details</Text>}
                         </div>
-                        <div>
-                                <TextInput placeholder="password.." color="white" label="Password" size="sm"
-                                        //     value={signUpCreds.password}
-                                        //     onChange={(e) =>
-                                        //         setSignUpCreds({ ...signUpCreds, password: e.target.value })
-                                        //     }
-                                />
-                                <TextInput placeholder="password.." color="white" label="Confirm Password" size="sm"
-                                        //     value={signUpCreds.confirmPassword}
-                                        //     onChange={(e) =>
-                                        //         setSignUpCreds({
-                                        //             ...signUpCreds,
-                                        //             confirmPassword: e.target.value,
-                                        //         })
-                                        //     }
-                                />
-                        </div>
-                    </div>
-                    <Button className="mt-2" radius="xs" size="sm" variant="default" color="grey"
-                    //  type="submit"
-                     >Submit</Button>
+                        <TextInput className="w-[100%]" labelProps={{color:'white'}} color="white" label="Your username" size="md" 
+                                value={signUpCreds.username}
+                                onChange={(e) =>
+                                        setSignUpCreds({ ...signUpCreds, username: e.target.value })
+                                }
+                        />
+                        <TextInput className="w-[100%]"  labelProps={{color:'white'}} color="white" label="Your email" size="md" 
+                                value={signUpCreds.email}
+                                onChange={(e) =>
+                                        setSignUpCreds({ ...signUpCreds, email: e.target.value })
+                                }
+                        />
+                        <PasswordInput className="w-[100%]"   color="white" label="Enter a password" size="md"
+                                        value={signUpCreds.password}
+                                        onChange={(e) =>
+                                        setSignUpCreds({ ...signUpCreds, password: e.target.value })
+                                        }
+                        />
+                        <PasswordInput className="w-[100%]"  color="white" label="Confirm password" size="md"
+                                        value={signUpCreds.confirmPassword}
+                                        onChange={(e) =>
+                                        setSignUpCreds({
+                                                ...signUpCreds,
+                                                confirmPassword: e.target.value,
+                                        })
+                                        }
+                        />
+                        <Button disabled={!canSubmit} className="mt-2" radius="xs" size="sm" variant="default" color="grey" type="submit">Finish</Button>
                 </div>
                 </form>
         )

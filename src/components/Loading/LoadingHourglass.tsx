@@ -34,29 +34,15 @@ function LoadingHourglass() {
         }, []);
         
         return (
-                <div style={{ position: 'absolute', left: '10px', bottom: '10px' }} ref={inputRef}>
-                        {/* <l-hourglass
-                                size={size ? size :"80"}
-                                bg-opacity="0.3"
-                                speed="1.25"
-                                color="#7baefa"
-                        ></l-hourglass> */}
-                        {/* <l-reuleaux
-                        size="68"
-                        stroke="6"
-                        stroke-length="0.15"
-                        bg-opacity="0.1"
-                        speed="1.2" 
-                        color="#EF4DE2" 
-                        ></l-reuleaux> */}
+                <div ref={inputRef}>
                         <l-trefoil
-                        size="68"
-                        stroke="6"
-                        stroke-length="0.15"
-                        bg-opacity="0.1"
-                        speed="2" 
-                        color="#EF4DE2"  
-></l-trefoil>
+                          size="68"
+                          stroke="6"
+                          stroke-length="0.15"
+                          bg-opacity="0.1"
+                          speed="2"
+                          color="white"
+                        />
                 </div>
         );
 }

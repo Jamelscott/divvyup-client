@@ -44,7 +44,7 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                 const response = await supabase.auth.signInWithPassword({ email: usernameOrEmail, password: password });
                 if (response.error) {
                     notifications.show(errorNotification('Failed to login','login info is incorrect'))
-                    throw new Error(response.error.message)
+                    return undefined
                 };
                 if (response.data.user) {
                     const { data: profile, error } = await supabase
@@ -59,8 +59,8 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
         } else {
                 const { data, error } = await supabase.from('profiles').select().eq('username', usernameOrEmail.toLocaleLowerCase());
                 if (error || data.length === 0) {
-                    notifications.show(errorNotification('Friend Request Failed','That usrname/email does not exist'))
-                    throw new Error('profile does not exist')
+                    notifications.show(errorNotification('Failed to login','login info is incorrect'))
+                    throw undefined
                 }
                 if (data) {
                     const response = await supabase.auth.signInWithPassword({ email: data[0].email, password: password });
@@ -157,4 +157,58 @@ export const handleRemoveFriend = async (userId: string, friendId:string) => {
         .eq('requester_uuid', friendId)
         .eq('requestee_uuid', userId); 
     if (error2 || error1) throw new Error('cannot remove friend')
+};
+
+export const handleSignUpSubmit = async (username:string, email:string, password:string, confirmPassword:string, user:User) => {
+    if (user.id) {
+        console.log(user)
+        notifications.show(errorNotification('Erorr','refresh the window'))
+        return false
+    }
+    if (!username || username.split('').length < 4) {
+        notifications.show(errorNotification('invalid username','username must be at least 4 characters'))
+        return false;
+    }
+    if (!email || email.split('@')[0].length < 4) {
+        notifications.show(errorNotification('invalid email','input a valid email'))
+        return false;
+    }
+    if (password.length < 5) {
+        notifications.show(errorNotification('invalid password','password must be at least 5 characters'))
+        return false;
+    }
+    if (password !== confirmPassword) {
+        notifications.show(errorNotification('invalid confirmation','passwords do not match'))
+        return false;
+    }
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    username: username.toLowerCase(),
+                },
+            },
+        });
+        if (error) {
+            if (error.message === 'duplicate key value violates unique constraint "profiles_username_key"') {
+                console.log('error: ', error);
+                notifications.show(errorNotification('invalid username','that username already exists'))
+                return false;
+            } else {
+                notifications.show(errorNotification('Unknown error', error.message))
+                return false;
+            }
+        }
+        if (data.user === null) {
+            notifications.show(errorNotification('login error','user not found, returning null from server'))
+            return false
+        }
+        if (data.user.email === undefined) {
+            notifications.show(errorNotification('login error','user email not found, returning null from server'))
+            return false
+        }
+        const newUser = userBuilder(data.user as any);
+        console.log(newUser);
+        return true
 };

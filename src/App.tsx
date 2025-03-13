@@ -19,6 +19,7 @@ import '@mantine/core/styles.css';
 import { LoadingOverlay, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Landing from './InProgress/Landing.tsx';
+import { NavbarMinimal } from './InProgress/Navbar/Navbar.tsx';
 
 function App() {
     const userDataState = useSelector(selectUserState)
@@ -46,19 +47,17 @@ function App() {
 
     return (
         <MantineProvider defaultColorScheme="dark" >
-            <BrowserRouter>
-            {/* <DotPattern /> */}
-               {isLoggingIn  &&  <LoadingOverlay
-                visible={true}
-                zIndex={1000}
-                overlayProps={{ radius: 'sm', blur: 100, color:'none' }}
-                loaderProps={{children: <LoadingHourglass/>}}
-                // loaderProps={{ children: <SparklesText sparklesCount={8} className="loginText" text="Loading..." />}}
-                />}
-                {!!user?.username && <FloatingNav />}                {/* {errorMsg?.length > 0 && <ErrorMsg />} */}
-                {isLoading && <LoadingHourglass />}
+            <BrowserRouter> 
+                <LoadingOverlay
+                    visible={isLoggingIn}
+                    overlayProps={{opacity:0, blur: 0 }}
+                    loaderProps={{children: <LoadingHourglass/>}}
+                />
+                {!!user?.username && <FloatingNav />}
+                {/* {isLoading && <LoadingHourglass />} */}
+                <NavbarMinimal />
                 <Routes>
-                    <Route path='/' element={<Landing />} />
+                    <Route path='/' element={<Landing setIsLoggingIn={setIsLoggingIn}/>} />
                     <Route path='/home' element={<Home /> } />
                     <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn} />} />
                     <Route path='/analytics' element={<Analytics />} />
@@ -68,7 +67,7 @@ function App() {
                     <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn}/>} />
                     <Route path='/signup' element={<SignUp />} />
                 </Routes>
-                <Notifications color="grape" className='w-fit absolute bottom-10 right-5' />
+                <Notifications color="grape" className='w-fit absolute top-5 left-1/2 transform -translate-x-1/2' />
             </BrowserRouter>
         </MantineProvider>
     );
