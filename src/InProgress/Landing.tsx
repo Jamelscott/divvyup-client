@@ -6,11 +6,19 @@ import progressiveIcon from "../../public/pwa.png"
 import { useState } from "react"
 import LoginForm from "./LoginForm/LoginForm"
 import SignUpForm from "./SignUpForm/SignUpFormx.tsx"
-import { NavbarMinimal } from "./Navbar/Navbar.tsx"
+import { useSelector } from "react-redux"
+import { selectUser } from "@/slices/userSlice.ts"
+import { useNavigate } from "react-router-dom"
 
 const Landing = ({setIsLoggingIn}: {setIsLoggingIn: (val:boolean) => void}) => {
+	const navigate = useNavigate()
 	const [openSignUp, setOpenSignUp] = useState(false)
 	const [openLogin, setOpenLogin] = useState(false)
+	const user = useSelector(selectUser)
+
+	if (user.id) {
+		navigate('/home')
+	}
 
 	const closeBothForms = () => {
 		openSignUp && setOpenSignUp(false)
@@ -18,7 +26,7 @@ const Landing = ({setIsLoggingIn}: {setIsLoggingIn: (val:boolean) => void}) => {
 	}
         return (
 			<>
-			<div onClick={()=> closeBothForms()} className="p-10 pb-0 px-40 max-xl:px-8 flex flex-col min-w-sm text-white">
+			<div onClick={()=> closeBothForms()} className="p-10 pb-0 px-40 max-xl:px-8 flex flex-col min-w-sm text-white max-h-[100vh]">
 				<div className="flex justify-between">
 					<div className="text-5xl">
 							<h1 className="text-white font-light font-[Trispace]">
@@ -26,7 +34,7 @@ const Landing = ({setIsLoggingIn}: {setIsLoggingIn: (val:boolean) => void}) => {
 							</h1>
 					</div>
 					<div className="items-center justify-end gap-5 font-[montserrat]">
-						<div className="flex max-[450px]:hidden gap-5">
+						<div className="flex max-[600px]:hidden gap-5">
 							<Popover 
 								width={250}
 								trapFocus
@@ -61,7 +69,7 @@ const Landing = ({setIsLoggingIn}: {setIsLoggingIn: (val:boolean) => void}) => {
 						</div>
 					</div>
 				</div>
-				<div className="flex justify-start gap-20 max-lg:flex-col max-xlg:items-start lg:mt-[150px] min-h-[450px]">
+				<div className="flex gap-20 max-xlg:items-start mt-[75px] min-h-[450px]">
 					<div className="flex flex-col gap-5 pt-20 ">
 						<div className="text-7xl max-xl:text-6xl">
 							<p className="font-[Exo] pb-[10px]">
@@ -74,7 +82,7 @@ const Landing = ({setIsLoggingIn}: {setIsLoggingIn: (val:boolean) => void}) => {
 						<div className="text-lg font-[montserrat]">
 							<p>From rent to dinner, Billy makes splitting costs<br/> simple and hassle-free.</p>
 						</div>
-						<div className="hidden max-[450px]:flex gap-5">
+						<div className="hidden max-[600px]:flex gap-5">
 							<Button onClick={()=> setOpenLogin(prev => !prev)} radius="xs" size="md" variant="outline" color="white"><span className="text-[14px]">Login</span></Button>
 							<Button onClick={()=> setOpenSignUp(prev => !prev)} radius="xs" size="md" color="#11B5E4"><span className="text-[14px]">Sign Up</span></Button>
 						</div>
@@ -87,7 +95,7 @@ const Landing = ({setIsLoggingIn}: {setIsLoggingIn: (val:boolean) => void}) => {
 							<img className="cursor-pointer transition-transform duration-50 active:translate-y-1" src={progressiveIcon}/>
 						</div>
 					</div>
-					<div className="hidden md:flex flex-1 flex justify-center max-w-[500px]">
+					<div className="hidden lg:flex flex-1 justify-center max-w-[500px] min-w-[500px] max-h-[585px] min-h-[585px]">
 						<img src={holdingApp} />
 					</div>
 				</div>

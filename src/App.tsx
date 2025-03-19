@@ -11,15 +11,15 @@ import { useEffect, useState } from 'react';
 import { User } from './types';
 import { getFriendRequests, getFriends, selectFriendsState } from './slices/friendsSlice.ts';
 import { AppDispatch } from './utils/store.ts';
-import { FloatingNav } from './components/Navbar/FloatingNav.tsx';
 import './globals.css'
 import LoadingHourglass from './components/Loading/LoadingHourglass.tsx';
-// import Friend from './components/Friends/components/Friend.tsx';
 import '@mantine/core/styles.css';
 import { LoadingOverlay, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Landing from './InProgress/Landing.tsx';
-import { NavbarMinimal } from './InProgress/Navbar/Navbar.tsx';
+import { NavbarMinimal as Navbar } from './InProgress/Navbar/Navbar.tsx';
+import { SmallNavbar } from './InProgress/Navbar/SmallNavbar.tsx';
+import NotFound from './components/404/NotFound.tsx';
 
 function App() {
     const userDataState = useSelector(selectUserState)
@@ -44,7 +44,6 @@ function App() {
         }
     }, [])
 
-
     return (
         <MantineProvider defaultColorScheme="dark" >
             <BrowserRouter> 
@@ -53,21 +52,34 @@ function App() {
                     overlayProps={{opacity:0, blur: 0 }}
                     loaderProps={{children: <LoadingHourglass/>}}
                 />
-                {!!user?.username && <FloatingNav />}
-                {/* {isLoading && <LoadingHourglass />} */}
-                <NavbarMinimal />
-                <Routes>
-                    <Route path='/' element={<Landing setIsLoggingIn={setIsLoggingIn}/>} />
-                    <Route path='/home' element={<Home /> } />
-                    <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn} />} />
-                    <Route path='/analytics' element={<Analytics />} />
-                    <Route path='/profile' element={<Profile />} />
-                    <Route path='/friends' element={<Friends />} />
-                    {/* <Route path='/friends/:id' element={<Friend />} /> */}
-                    <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn}/>} />
-                    <Route path='/signup' element={<SignUp />} />
-                </Routes>
-                <Notifications color="grape" className='w-fit absolute top-5 left-1/2 transform -translate-x-1/2' />
+                {/* {!isLoading && <LoadingHourglass />} */}
+                <div className='flex max-[600px]:flex-col'>
+                    {user.id && 
+                    <>
+                    <div className='hidden max-[600px]:flex'>
+                        <SmallNavbar />
+                    </div>
+                    <div className='flex max-[600px]:hidden fixed h-[100%]'>
+                        <Navbar />
+                    </div>
+                    </>
+                    }
+                    <div className={user.id ? `pl-[80px] w-full max-[600px]:p-0` : 'flex justify-center w-[100%]'}>
+                        <Routes>
+                            <Route path='/' element={user.id ? <Home /> : <Landing setIsLoggingIn={setIsLoggingIn}/>}/>
+                            {/* <Route path='/home' element={<Home />} /> */}
+                            <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn} />} />
+                            <Route path='/analytics' element={<Analytics />} />
+                            <Route path='/profile' element={<Profile />} />
+                            <Route path='/friends' element={<Friends />} />
+                            {/* <Route path='/friends/:id' element={<Friend />} /> */}
+                            <Route path='/login' element={<Login setIsLoggingIn={setIsLoggingIn}/>} />
+                            <Route path='/signup' element={<SignUp />} />
+                            <Route path='*' element={<NotFound />} />
+                        </Routes>
+                    </div>
+                </div>
+                <Notifications color="grape" className='absolute bottom-5 right-5' />
             </BrowserRouter>
         </MantineProvider>
     );

@@ -26,9 +26,9 @@ const LoginForm = ({open, setIsLoggingIn, setOpenLogin, mobile}:{open:boolean,se
                 setIsLoggingIn(false)
                 navigate('/');
                 setOpenLogin(false)
+                setLoginCreds(DEFAULT_LOGINCREDS)
             } else {
                 setIsLoggingIn(false)
-                setLoginCreds(DEFAULT_LOGINCREDS)
             }
         } catch (err) {
             console.log(err);

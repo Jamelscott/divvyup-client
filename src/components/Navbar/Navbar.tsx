@@ -1,16 +1,13 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { handleLogout, handleUserSession } from '../../utils/userHelpers';
-import { User } from '../../types';
-import { useContext, useState } from 'react';
-import { UserContext, UserContextType } from '../../context/userContext';
+import { useState } from 'react';
 import './navbar.css'
 import analyticsIcon from '../../../assets/navbarIcons/analytics-icon.svg'
 import friendsIcon from '../../../assets/navbarIcons/friends-icon.svg'
 import homeIcon from '../../../assets/navbarIcons/home-icon.svg'
 import profileIcon from '../../../assets/navbarIcons/profile-icon.svg'
 import logoutIcon from '../../../assets/navbarIcons/logout-icon.svg'
-import { useDispatch, useSelector } from 'react-redux';
-import { DataState, logoutUser, selectUser, selectUserState } from '../../slices/userSlice';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../slices/userSlice';
 import { AppDispatch } from '../../utils/store';
 import { expireFriends } from '../../slices/friendsSlice';
 

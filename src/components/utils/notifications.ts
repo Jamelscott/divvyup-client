@@ -8,7 +8,7 @@ export const errorNotification = (title:string, message: string ) : {
         return {
                 title: title,
                 message: message,
-                color: 'grape',
+                color: 'red',
                 withBorder: true,
                 radius: "md",
             }

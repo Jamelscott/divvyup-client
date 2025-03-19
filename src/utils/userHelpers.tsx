@@ -52,7 +52,11 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                         .select('*')
                         .eq('id', response.data.user.id)
                         .single()
-                    if (error) console.log(error)
+                    if (error) {
+                        console.log(error)
+                        notifications.show(errorNotification('Failed to login','login info is incorrect'))
+                        return
+                    }
                     const signedInUser = userBuilder(profile);
                     return signedInUser;
                 }
@@ -64,7 +68,11 @@ export async function loginEmailOrUsername(loginCreds: UserLogin): Promise<User 
                 }
                 if (data) {
                     const response = await supabase.auth.signInWithPassword({ email: data[0].email, password: password });
-                    if (response.error) throw response.error;
+                    if (response.error) {
+                            console.log(error)
+                            notifications.show(errorNotification('Failed to login','login info is incorrect'))
+                            return
+                    }
 
                     if (response.data.user) {
                         const { data: profile, error } = await supabase

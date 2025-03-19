@@ -1,15 +1,15 @@
 .navbar {
-  width: 80px;
+  position: absolute;
+  bottom: 0;
   padding: var(--mantine-spacing-md);
   display: flex;
-  flex-direction: column;
-  border-right: 1px solid
-    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-}
-
-.navbarMain {
-  flex: 1;
-  margin-top: 50px;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 100%;
+  flex-wrap: nowrap;
+  background-color: rgb(32, 90, 71);
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 
 .link {
