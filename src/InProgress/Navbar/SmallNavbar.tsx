@@ -7,10 +7,11 @@ import {
   IconLogout,
   IconSettings,
   IconUserCircle,
+  IconDotsVertical,
 } from '@tabler/icons-react';
 import { Tooltip, UnstyledButton } from '@mantine/core';
 import classes from './SmallNavbar.module.css'
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '@/slices/userSlice';
 import { expireFriends } from '@/slices/friendsSlice';
@@ -34,22 +35,35 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 }
 
 const tabs = [
-  { icon: IconHome2, label: 'Home' },
-  { icon: IconFriends, label: 'Friends' },
-  { icon: IconUsersGroup, label: 'Groups' },
-  { icon: IconDeviceDesktopAnalytics, label: 'Analytics' },
+  { icon: IconHome2, label: 'Home', index: 0 },
+  { icon: IconFriends, label: 'Friends', index: 1 },
+  { icon: IconUsersGroup, label: 'Groups', index: 2 },
+  { icon: IconUserCircle, label: 'Profile', index: 3 },
+];
+const Additionaltabs = [
+  { icon: IconDeviceDesktopAnalytics, label: 'Analytics', index: 4 },
+  { icon: IconSettings, label: 'Settings', index: 5 },
 ];
 
 export function SmallNavbar() {
         const [active, setActive] = useState(0);
         const navigate = useNavigate()
         const dispatch = useDispatch<AppDispatch>();
-        const links = tabs.map((link, index) => (
+        const [showAdditionalLinks, setShowAdditionalLinks] = useState(false)
+        const links = tabs.map((link) => (
                 <NavbarLink
                 {...link}
                 key={link.label}
-                active={index === active}
-                onClick={() => handleLinkClick(index, (link.label as any).toLowerCase())}
+                active={link.index === active}
+                onClick={() => handleLinkClick(link.index, (link.label as any).toLowerCase())}
+                />
+        ));
+        const additionalLinks = Additionaltabs.map((link) => (
+                <NavbarLink
+                {...link}
+                key={link.label}
+                active={link.index === active}
+                onClick={() => handleLinkClick(link.index, (link.label as any).toLowerCase())}
                 />
         ));
 
@@ -67,24 +81,24 @@ export function SmallNavbar() {
         };
   return (
     <nav className={`${classes.navbar}`}>
+            {showAdditionalLinks && 
+        <div className={`${classes.navbarAdditionalLinks}`}>
+          {additionalLinks}
+          <NavbarLink 
+            icon={IconLogout}
+            label="Logout"
+		        onClick={()=> handleLogout()}
+          />
+        </div>
+      }
+      <div className={`${classes.navbarLinks}`}>
           {links}
-        <NavbarLink 
-                icon={IconUserCircle}       
-                active={4 === active}
-                onClick={() => handleLinkClick(4, 'profile')}
-                label="Account"
-         />
-        <NavbarLink
-                icon={IconSettings}
-                label="Settings"
-                active={5 === active}
-                onClick={() => handleLinkClick(5)}
-        />
-        <NavbarLink 
-                icon={IconLogout}
-                label="Logout"
-		onClick={()=> handleLogout()}
-        />
+          <NavbarLink 
+            icon={IconDotsVertical}
+            label="More"
+		        onClick={()=> setShowAdditionalLinks((prev)=> !prev)}
+          />
+      </div>
     </nav>
   );
 }
