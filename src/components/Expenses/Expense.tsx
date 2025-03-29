@@ -20,7 +20,7 @@ import StackedDate from "./components/StackedDate";
 import { ExpenseListType } from "./ExpenseList";
 import { AppDispatch } from "@/utils/store";
 import ConfirmationModal from "@/utils/ConfirmationModal";
-
+import classes from './expense.module.css'
 
 const expenseOptions = {
     household: household,
@@ -55,7 +55,7 @@ function Expense({ expense, sourceType }: { expense: ExpenseData, sourceType: Ex
     }
     return (
         <>
-            <div className="flex bg-white border-2 border-grey rounded-3xl p-3 shadow-xl justify-between w-full h-22" key={`${expense.id}`}>
+            <div className={classes.customContainer} key={`${expense.id}`}>
                 <div className="flex gap-10">
                     {sourceType === ExpenseListType.RECENT && <div className="flex flex-col justify-between items-center">
                         <div>

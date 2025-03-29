@@ -6,6 +6,9 @@
 #docs-root {
   --main-background: #0f2521;
 }
+body {
+  color: white;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

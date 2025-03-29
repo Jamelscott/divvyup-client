@@ -10,7 +10,6 @@ const NotFound = () => {
                        <h1 className="text-white font-light font-[Trispace]">
 			        Well this is awkward..
 			</h1>
-                        <Button onClick={()=> navigate('/')}>let's go back home..</Button>
                 </div>
         )
 }

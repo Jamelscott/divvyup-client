@@ -95,6 +95,22 @@ export const calcTotalExpenseDiff = (expenses: ExpenseData[], user: User) => {
     return total
 }
 
+export const calcTotalOwing = (expenses: ExpenseData[], user: User) => {
+    let total = 0;
+    expenses.forEach((expense) => {
+        if (expense.ower === user.id) total += Number(priceParser(expense))
+    })
+    return total
+}
+
+export const calcTotalLent = (expenses: ExpenseData[], user: User) => {
+    let total = 0;
+    expenses.forEach((expense) => {
+        if (expense.lender === user.id) total += Number(priceParser(expense))
+    })
+    return total
+}
+
 export const handleDeleteExpense = async (expense: ExpenseData, user: User) => {
     if (expense.lender !== user.id && expense.ower !== user.id) throw new Error('user cannot delete another users expense')
     const { error, data } = await supabase

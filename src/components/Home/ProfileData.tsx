@@ -1,7 +1,7 @@
 import { selectExpenses, selectUser } from "@/slices/userSlice";
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
-import { calcTotalExpenseDiff } from "@/utils/expenseHelpers";
+import { calcTotalExpenseDiff, calcTotalLent, calcTotalOwing } from "@/utils/expenseHelpers";
 import { AdvancedImage } from "@cloudinary/react";
 import { Cloudinary } from "@cloudinary/url-gen/index";
 import { fill } from "@cloudinary/url-gen/actions/resize";
@@ -13,13 +13,13 @@ import { selectFriends } from "@/slices/friendsSlice";
 function ProfileData() {
         const user = useSelector(selectUser)
         const expenses = useSelector(selectExpenses)
-        const expenseDiff = useMemo(() => calcTotalExpenseDiff(expenses, user), [expenses])
         const friends = useSelector(selectFriends)
 
         const getTotalNum = (num: number) => {
                 return Number(Math.round(parseFloat(Math.abs(num) + 'e' + 2)) + 'e-' + 2).toFixed(2);
         }
-        const checkOwing = useMemo(() => {
+        const totalDiff = useMemo(() => {
+                const expenseDiff = calcTotalExpenseDiff(expenses, user)
                 if (expenseDiff > 0) {
                         return <h3 style={{ color: 'green' }}>Overall, you are owed ${expenseDiff.toFixed(2)}</h3>
                 } else if (expenseDiff < 0) {
@@ -29,7 +29,23 @@ function ProfileData() {
                 } else {
                         return <></>
                 }
-        }, [friends])
+        }, [friends, expenses])
+        const totalOwing = useMemo(() => {
+                const totalOwing = calcTotalOwing(expenses, user)
+                if (totalOwing > 0) {
+                        return <h3 style={{ color: 'red' }}>You owe {totalOwing.toFixed(2)} overall</h3>
+                } else {
+                        return <h3 style={{ color: 'green' }}>You don't owe anything</h3>
+                }
+        }, [friends, expenses])
+        const totalLent = useMemo(() => {
+                const totalLent = calcTotalLent(expenses, user)
+                if (totalLent > 0) {
+                        return <h3 style={{ color: 'green' }}>You lent out ${totalLent.toFixed(2)} overall</h3>
+                } else {
+                        return <h3 style={{ color: 'green' }}>You haven't lent anything</h3>
+                }
+        }, [friends, expenses])
         const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUD_PROFILE, } }).image(user.photo).resize(fill().width(100).height(100)).roundCorners(byRadius(100)).effect(outline().color("grey"))
         const adjsutedName = user.username.replace(user.username.charAt(0), user.username.charAt(0).toUpperCase())
         return (
@@ -40,7 +56,9 @@ function ProfileData() {
                                         <SparklesText sparklesCount={4} className="loginText" text={adjsutedName} />
                                 </div>
                                 <div>
-                                        {checkOwing}
+                                        {totalDiff}
+                                        {totalOwing}
+                                        {totalLent}
                                 </div>
                         </div>
                 </div>
