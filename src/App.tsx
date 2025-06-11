@@ -1,7 +1,6 @@
 import Login from "./components/Login/Login.tsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignUp from "./components/SignUp/SignUp.tsx";
-import Home from "./components/Home/Home.tsx";
 import Analytics from "./components/Analytics/Analytics.tsx";
 import Profile from "./components/Profile/Profile.tsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +28,8 @@ import { NavbarMinimal as Navbar } from "./InProgress/Navbar/Navbar.tsx";
 import { SmallNavbar } from "./InProgress/Navbar/SmallNavbar.tsx";
 import NotFound from "./components/404/NotFound.tsx";
 import ProgressFriends from "./InProgress/Friends/FriendsPage.tsx";
+import Friend from "./InProgress/Friend/ProgressFriend.tsx";
+import Home from "./InProgress/Home/ProgressHome.tsx";
 
 function App() {
   const userDataState = useSelector(selectUserState);
@@ -93,7 +94,7 @@ function App() {
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/friends" element={<ProgressFriends />} />
-            {/* <Route path='/friends/:id' element={<Friend />} /> */}
+            <Route path="/friends/:id" element={<Friend />} />
             <Route
               path="/login"
               element={<Login setIsLoggingIn={setIsLoggingIn} />}

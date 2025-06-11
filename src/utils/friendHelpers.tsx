@@ -8,6 +8,9 @@ export type FriendOwingDiff = {
   userPayments: ExpenseData[];
   friendPayments: ExpenseData[];
   totalSpent: number;
+  splitPercentage: number;
+  friendOwes: number;
+  userOwes: number;
 };
 
 export const handleRequestFriend = async (
@@ -23,7 +26,11 @@ export const handleRequestFriend = async (
       message: "you cannot add yourself",
       color: "grape",
       withBorder: true,
+      position: "top-left",
       radius: "md",
+      style: {
+        zIndex: "999",
+      },
     });
     return;
   }
@@ -92,10 +99,14 @@ export const handleRequestFriend = async (
           if (error.code === "23505") {
             notifications.show({
               title: "Friend Request Failed",
+              position: "top-left",
               message: "already friends or request is pending",
               color: "grape",
               withBorder: true,
               radius: "md",
+              style: {
+                zIndex: "999",
+              },
             });
             // throw new Error(`friend request pending or youre already friends`);;
           }
@@ -108,8 +119,12 @@ export const handleRequestFriend = async (
           title: "Friend Request Failed",
           message: "That user may not exist",
           color: "grape",
+          position: "top-left",
           withBorder: true,
           radius: "md",
+          style: {
+            zIndex: "999",
+          },
         });
       }
     } catch (error) {
@@ -253,4 +268,8 @@ export const friendOwingDiff = (
 
 export const getLocalFriend = (friendId: string, friends: User[]) => {
   return friends.find((friend) => friendId === friend.id) ?? null;
+};
+
+export const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };

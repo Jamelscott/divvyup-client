@@ -75,6 +75,8 @@ export const getActiveSession = createAsyncThunk(
 			expenses: userExpenses,
 			photo: profile.photo
 		}
+		sessionStorage.setItem('user', JSON.stringify(userSessionData));
+
 		return userSessionData
 		// if (error) {
 		// 	return thunkApi.rejectWithValue('error');

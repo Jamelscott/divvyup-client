@@ -7,7 +7,7 @@ import {
 } from "../../../slices/friendsSlice";
 import { AppDispatch } from "../../../utils/store";
 import FriendRequestForm from "./FriendRequestForm";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SvgButton from "@/components/utils/SvgButton";
 import { Image } from "@mantine/core";
 
@@ -15,6 +15,7 @@ function FriendRequests() {
   const user = useSelector(selectUser);
   const friendRequests = useSelector(selectFriendRequests);
   const [openForm, setOpenForm] = useState(false);
+  const circleNum = useRef<HTMLSpanElement>(null);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -27,7 +28,25 @@ function FriendRequests() {
   return (
     <>
       <div className="flex flex-col gap-5 h-full items-center font-[Trispace] bg-[#D9D9D9] bg-opacity-5 p-5 w-[300px] h-full">
-        <h3>Requests</h3>
+        <h3>
+          <span
+            ref={circleNum}
+            style={{
+              border: "2px solid grey",
+              display: "inline-flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "32px",
+              height: "32px",
+              padding: "5px",
+              borderRadius: "50%",
+              color: "#87F71E",
+            }}
+          >
+            {friendRequests.length}
+          </span>{" "}
+          Requests
+        </h3>
         {friendRequests.length > 0 && (
           <>
             {/* <Hr /> */}

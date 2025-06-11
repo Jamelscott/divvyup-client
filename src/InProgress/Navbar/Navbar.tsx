@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo } from "react";
 import {
   IconDeviceDesktopAnalytics,
   IconUsersGroup,
@@ -7,14 +7,14 @@ import {
   IconLogout,
   IconSettings,
   IconUserCircle,
-} from '@tabler/icons-react';
-import { Center, Stack, Tooltip, UnstyledButton } from '@mantine/core';
-import classes from './Navbar.module.css';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { logoutUser } from '@/slices/userSlice';
-import { expireFriends } from '@/slices/friendsSlice';
-import { AppDispatch } from '@/utils/store';
+} from "@tabler/icons-react";
+import { Center, Stack, Tooltip, UnstyledButton } from "@mantine/core";
+import classes from "./Navbar.module.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "@/slices/userSlice";
+import { expireFriends } from "@/slices/friendsSlice";
+import { AppDispatch } from "@/utils/store";
 
 interface NavbarLinkProps {
   icon: typeof IconHome2;
@@ -26,7 +26,11 @@ interface NavbarLinkProps {
 function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
   return (
     <Tooltip label={label} position="right" transitionProps={{ duration: 0 }}>
-      <UnstyledButton onClick={onClick} className={classes.link} data-active={active || undefined}>
+      <UnstyledButton
+        onClick={onClick}
+        className={classes.link}
+        data-active={active || undefined}
+      >
         <Icon size={20} stroke={1.5} />
       </UnstyledButton>
     </Tooltip>
@@ -34,43 +38,62 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 }
 
 const tabs = [
-  { icon: IconHome2, label: 'Home' },
-  { icon: IconFriends, label: 'Friends' },
-  { icon: IconUsersGroup, label: 'Groups' },
-  { icon: IconDeviceDesktopAnalytics, label: 'Analytics' },
+  { icon: IconHome2, label: "Home", path: "/", active: 0 },
+  { icon: IconFriends, label: "Friends", path: "/friends", active: 1 },
+  { icon: IconUsersGroup, label: "Groups", path: "/groups", active: 2 },
+  {
+    icon: IconDeviceDesktopAnalytics,
+    label: "Analytics",
+    path: "/analytics",
+    active: 3,
+  },
 ];
 
 export function NavbarMinimal() {
-const [active, setActive] = useState(0);
-const navigate = useNavigate()
-const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
+
+  // REPLACE useState with this useMemo:
+  const active = useMemo(() => {
+    const currentPath = location.pathname;
+
+    // Check main tabs first
+    const tabIndex = tabs.findIndex((tab) => tab.path === currentPath);
+    if (tabIndex !== -1) return tabIndex;
+
+    // Check additional routes
+    if (currentPath.startsWith("/friends")) return 1;
+    if (currentPath.startsWith("/groups")) return 2;
+    if (currentPath.startsWith("/analytics")) return 3;
+    if (currentPath.startsWith("/profile")) return 4;
+    if (currentPath.startsWith("/settings")) return 5;
+
+    // Default to 404
+    return 0;
+  }, [location.pathname]);
+
   const links = tabs.map((link, index) => (
     <NavbarLink
       {...link}
       key={link.label}
       active={index === active}
-      onClick={() => handleLinkClick(index, (link.label as any).toLowerCase())}
+      onClick={() => navigate(link.path)} // Simplified onClick
     />
   ));
 
-  const handleLinkClick = (index:number, label?:String) => {
-        setActive(index)
-        if (label === 'home') return navigate('/')
-		if (label) navigate((label as any))
-  }
-	const handleLogout = async () => {
-		await dispatch(logoutUser())
-		dispatch(expireFriends())
-		navigate('/')
-		console.log('user logged out');
-		return
-	};
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    dispatch(expireFriends());
+    navigate("/");
+    console.log("user logged out");
+    return;
+  };
   return (
     <nav className={`${classes.navbar}`}>
       <Center>
-        <h1 className="text-white font-light text-4xl font-[Trispace]">
-        B
-        </h1>
+        <h1 className="text-white font-light text-4xl font-[Trispace]">B</h1>
       </Center>
 
       <div className={classes.navbarMain}>
@@ -80,22 +103,22 @@ const dispatch = useDispatch<AppDispatch>();
       </div>
 
       <Stack justify="center" gap={0}>
-        <NavbarLink 
-                icon={IconUserCircle}       
-                active={4 === active}
-                onClick={() => handleLinkClick(4, 'profile')}
-                label="Account"
-         />
         <NavbarLink
-                icon={IconSettings}
-                label="Settings"
-                active={5 === active}
-                onClick={() => handleLinkClick(5)}
+          icon={IconUserCircle}
+          active={4 === active}
+          onClick={() => navigate("/profile")}
+          label="Account"
         />
-        <NavbarLink 
-                icon={IconLogout}
-                label="Logout"
-				onClick={()=> handleLogout()}
+        <NavbarLink
+          icon={IconSettings}
+          label="Settings"
+          active={5 === active}
+          onClick={() => navigate("/settings")}
+        />
+        <NavbarLink
+          icon={IconLogout}
+          label="Logout"
+          onClick={() => handleLogout()}
         />
       </Stack>
     </nav>

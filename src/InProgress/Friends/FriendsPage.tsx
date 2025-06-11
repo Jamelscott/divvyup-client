@@ -9,6 +9,8 @@ import {
 import { AppDispatch } from "@/utils/store";
 import { FriendSourceType } from "@/components/Home/Home";
 import FriendRequests from "./components/FriendRequests";
+import SmallFriendsList from "./components/SmallFriendsList";
+import SmallFriendRequests from "./components/SmallFriendRequests";
 
 function FriendsPage() {
   const friendsState = useSelector(selectFriendsState);
@@ -28,12 +30,21 @@ function FriendsPage() {
 
   return (
     <>
-      <div
-        className="flex justify-between p-[40px] gap-5 w-full"
-        style={{ overflow: "hidden" }}
-      >
-        <FriendsList sourceType={FriendSourceType.FRIENDS_PAGE} />
-        <FriendRequests />
+      <div className="hidden max-[600px]:flex flex-col items-center p-5 justify-center">
+        <SmallFriendRequests />
+        <div className="pt-4">
+          <SmallFriendsList sourceType={FriendSourceType.FRIENDS_PAGE} />
+        </div>
+      </div>
+
+      <div className="max-[600px]:hidden">
+        <div
+          className="flex justify-between p-[40px] gap-5 w-full"
+          style={{ overflow: "hidden" }}
+        >
+          <FriendsList sourceType={FriendSourceType.FRIENDS_PAGE} />
+          <FriendRequests />
+        </div>
       </div>
     </>
   );

@@ -11,22 +11,23 @@ import SvgButton from "@/components/utils/SvgButton";
 function FriendRequestForm({ modalFunc, modalOpen }: any) {
   const user = useSelector(selectUser);
   const dispatch = useDispatch<AppDispatch>();
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, getValues, reset } = useForm({
     mode: "onSubmit",
   });
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const submitFriendRequest = async () => {
     setLoading(true);
-    if (inputRef.current?.value) {
+    const nameValue = getValues("name");
+
+    if (nameValue) {
       await dispatch(
         postFriendRequest({
           user: user,
-          usernameOrEMail: inputRef.current.value,
+          usernameOrEMail: nameValue,
         })
       );
-      inputRef.current.value = "";
+      reset();
     }
     setLoading(false);
     modalFunc(!modalOpen);
@@ -53,7 +54,6 @@ function FriendRequestForm({ modalFunc, modalOpen }: any) {
           withAsterisk
           placeholder="email or username"
           {...register("name")}
-          ref={inputRef}
           rightSection={
             <SvgButton>
               <IconPlus

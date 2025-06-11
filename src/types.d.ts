@@ -45,8 +45,17 @@ export type ExpenseData = {
     created_at: Date;
 }
 
-export type AddExpense = Expense & {
+export type AddExpense = ExpenseData & {
     friendId: string
+}
+export type EditExpenseData = {
+    id: string,
+    lender: string,
+    ower: string,
+    name: string,
+    type: ExpenseType,
+    quantity: number,
+    splitpercentage: number,
 }
 
 export enum ExpenseListType {

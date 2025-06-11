@@ -9,17 +9,20 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { AppDispatch } from "../../../utils/store";
-import FriendCard from "./FriendCard";
+import Friend from "./FriendCard";
 import { User } from "@/types";
+import { useClickOutside } from "@mantine/hooks";
 import { FriendSourceType } from "@/components/Home/Home";
-import ExpenseModal from "./ExpenseModal";
+import SmallExpenseModal from "./SmallExpenseModal";
+import { Transition } from "@mantine/core";
 
-function FriendsList({ sourceType }: { sourceType: FriendSourceType }) {
+function SmallFriendsList({ sourceType }: { sourceType: FriendSourceType }) {
   const friendsDataState = useSelector(selectFriendsState);
   const friends = useSelector(selectFriends);
   const user = useSelector(selectUser);
+  const ref = useClickOutside(() => setOpen(false));
   const dispatch = useDispatch<AppDispatch>();
-  const [openModal, setOpenModal] = useState(false);
+  const [open, setOpen] = useState(false);
   const [modalFriend, setModalFriend] = useState<User>();
 
   useEffect(() => {
@@ -31,29 +34,45 @@ function FriendsList({ sourceType }: { sourceType: FriendSourceType }) {
 
   const handleOpenExpenseModal = (friend: User) => {
     setModalFriend(friend);
-    setOpenModal(true);
-    return;
+    setOpen(true);
   };
 
   return (
-    <div className="flex gap-4 flex-wrap w-full">
+    <div className="flex gap-4 flex-wrap justify-center pt-5">
       {user.expenses &&
         friends?.map((friend) => (
-          <FriendCard
+          <Friend
             key={friend.id}
             handleOpenExpenseModal={handleOpenExpenseModal}
             friend={friend}
             sourceType={sourceType}
           />
         ))}
-      {openModal && (
-        <ExpenseModal
-          onClose={() => setOpenModal(false)}
-          selectedFriend={modalFriend}
-        />
-      )}
+      <Transition
+        mounted={open}
+        transition="slide-up"
+        duration={400}
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <div
+            style={{
+              ...styles,
+              zIndex: "3",
+              position: "absolute",
+              bottom: "0",
+            }}
+            ref={ref}
+          >
+            <SmallExpenseModal
+              onClose={() => setOpen(false)}
+              selectedFriend={modalFriend}
+            />
+          </div>
+        )}
+      </Transition>
     </div>
   );
 }
 
-export default FriendsList;
+export default SmallFriendsList;
