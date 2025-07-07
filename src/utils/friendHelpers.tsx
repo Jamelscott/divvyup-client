@@ -273,3 +273,51 @@ export const getLocalFriend = (friendId: string, friends: User[]) => {
 export const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+export const friendOwingDiffs = (
+  friends: User[],
+  expenses: ExpenseData[],
+  user: User
+) =>
+  friends?.reduce(
+    (
+      acc: {
+        youAreOwed: {
+          friendId: string;
+          friendUsername: string;
+          friendPhoto: string;
+          totalDiff: number;
+        }[];
+        youOwe: {
+          friendId: string;
+          friendUsername: string;
+          friendPhoto: string;
+          totalDiff: number;
+        }[];
+      },
+      curr
+    ) => {
+      const { userSpent, friendSpent } = friendOwingDiff(user, expenses, curr);
+      if (userSpent > friendSpent) {
+        acc.youAreOwed.push({
+          friendId: curr.id,
+          friendUsername: curr.username,
+          friendPhoto: curr.photo,
+          totalDiff: userSpent - friendSpent,
+        });
+      } else if (friendSpent > userSpent) {
+        acc.youOwe.push({
+          friendId: curr.id,
+          friendUsername: curr.username,
+          friendPhoto: curr.photo,
+          totalDiff: friendSpent - userSpent,
+        });
+      }
+
+      return acc;
+    },
+    {
+      youOwe: [],
+      youAreOwed: [],
+    }
+  );

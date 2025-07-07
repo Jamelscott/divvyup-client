@@ -1,17 +1,11 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ExpenseData, GenericDataState, User, UserLogin, AddExpense } from "../types";
+import { ExpenseData, GenericDataState, User, UserLogin, AddExpense, DataState } from "@/types.d";
 import { handleDeleteUserExpenseSession, handleLogout, handleUpdateUserExpenseSession, handleUserSession, loginEmailOrUsername } from "../utils/userHelpers";
 import { RootState } from "../utils/store";
 import { handleAddExpense, handleDeleteExpense, handleEditExpense, handleFetchSingleProfileExpenses, handleSettleUp } from "../utils/expenseHelpers";
 import { uploadProfilePhoto } from "../utils/profileHelper";
 import { supabase } from "../supabase";
 
-export enum DataState {
-	INITIAL,
-	LOADING,
-	ERROR,
-	FULFILLED,
-}
 export const getUser = createAsyncThunk(
 	'user/get/fetchUser',
 	async (loginCreds: UserLogin, thunkApi) => {

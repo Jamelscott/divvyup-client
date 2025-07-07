@@ -68,6 +68,26 @@ export enum FriendListType {
     FRIENDS_PAGE
 };
 
+export enum FriendSourceType {
+  FRIENDS_PAGE,
+  FRIENDS_PAGE_SMALL,
+  HOME_PAGE,
+  HOME_PAGE_SMALL,
+  FRIEND_PAGE,
+}
+
+export enum ExpenseListType {
+  RECENT,
+  USER_SPECIFIC,
+}
+
+export enum DataState {
+        INITIAL,
+        LOADING,
+        ERROR,
+        FULFILLED,
+}
+
 export type ExpenseType = 'dining out' | 'grocery' | 'household' | 'misc' | 'mortgage' | 'pet' | 'rent'
 
 export type FriendSliceData = {

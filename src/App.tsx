@@ -1,17 +1,12 @@
-import Login from "./components/Login/Login.tsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import SignUp from "./components/SignUp/SignUp.tsx";
-import Analytics from "./components/Analytics/Analytics.tsx";
-import Profile from "./components/Profile/Profile.tsx";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  DataState,
   selectUser,
   selectUserState,
   userSession,
 } from "./slices/userSlice.ts";
 import { useEffect, useState } from "react";
-import { User } from "./types";
+import { DataState, User } from "./types.d";
 import {
   getFriendRequests,
   getFriends,
@@ -19,17 +14,19 @@ import {
 } from "./slices/friendsSlice.ts";
 import { AppDispatch } from "./utils/store.ts";
 import "./globals.css";
-import LoadingHourglass from "./components/Loading/LoadingHourglass.tsx";
 import "@mantine/core/styles.css";
 import { LoadingOverlay } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import Landing from "./InProgress/Landing.tsx";
-import { NavbarMinimal as Navbar } from "./InProgress/Navbar/Navbar.tsx";
-import { SmallNavbar } from "./InProgress/Navbar/SmallNavbar.tsx";
+import Landing from "./components/Landing.tsx";
+import { NavbarMinimal as Navbar } from "./components/Navbar/Navbar.tsx";
+import { SmallNavbar } from "./components/Navbar/SmallNavbar.tsx";
+import Friends from "./components/Friends/FriendsPage.tsx";
+import Friend from "./components/Friend/Friend.tsx";
+import Home from "./components/Home/Home.tsx";
+import LoadingHourglass from "./components/Loading/LoadingHourglass.tsx";
 import NotFound from "./components/404/NotFound.tsx";
-import ProgressFriends from "./InProgress/Friends/FriendsPage.tsx";
-import Friend from "./InProgress/Friend/ProgressFriend.tsx";
-import Home from "./InProgress/Home/ProgressHome.tsx";
+import Profile from "./components/Profile/Profile.tsx";
+import Logout from "./components/Logout/Logout.tsx";
 
 function App() {
   const userDataState = useSelector(selectUserState);
@@ -86,20 +83,11 @@ function App() {
                 user.id ? <Home /> : <Landing setIsLoggingIn={setIsLoggingIn} />
               }
             />
-            {/* <Route path='/home' element={<Home />} /> */}
-            <Route
-              path="/login"
-              element={<Login setIsLoggingIn={setIsLoggingIn} />}
-            />
-            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/analytics" element={<NotFound />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/friends" element={<ProgressFriends />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/logout" element={<Logout />} />
             <Route path="/friends/:id" element={<Friend />} />
-            <Route
-              path="/login"
-              element={<Login setIsLoggingIn={setIsLoggingIn} />}
-            />
-            <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

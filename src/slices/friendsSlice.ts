@@ -1,16 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { FriendRequest, FriendSliceData, GenericDataState, User } from "../types";
+import { DataState, FriendRequest, FriendSliceData, GenericDataState, User } from "@/types.d";
 import { RootState } from "../utils/store";
 import { acceptFriendRequest, deleteFriendRequest, fetchFriendRequests, fetchFriends, handleRequestFriend } from "../utils/friendHelpers";
 import { handleRemoveFriend } from "@/utils/userHelpers";
 import { updateExpenses } from "./userSlice";
 
-export enum DataState {
-        INITIAL,
-        LOADING,
-        ERROR,
-        FULFILLED,
-}
 export const getFriends = createAsyncThunk(
         'friends/get/fetchFriends',
         async (userId: string, thunkApi) => {
