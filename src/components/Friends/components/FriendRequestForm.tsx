@@ -45,12 +45,16 @@ function FriendRequestForm({ modalFunc, modalOpen }: any) {
   };
 
   return (
-    <form onSubmit={handleSubmit(() => submitFriendRequest())}>
-      <div className="flex justify-center gap-10 ">
+    <form
+      className="w-full"
+      onSubmit={handleSubmit(() => submitFriendRequest())}
+    >
+      <div className="flex justify-center gap-10 w-full ">
         <TextInput
           withAsterisk
           placeholder="email or username"
           {...register("name")}
+          className="w-full"
           rightSection={
             <SvgButton>
               <IconPlus

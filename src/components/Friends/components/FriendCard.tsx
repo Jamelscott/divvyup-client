@@ -63,7 +63,7 @@ function FriendCard({
 
   return (
     <div
-      className={`flex flex-col grow font-[Trispace] bg-[#D9D9D9] bg-opacity-5 h-fit p-5 gap-4 min-w-[350px] max-w-[700px] ${
+      className={`flex flex-col grow font-[Trispace] shadow-lg bg-[#D9D9D9] bg-opacity-5 h-fit p-5 gap-4 min-w-[350px] max-w-[700px] rounded-[10px] ${
         sourceType === FriendSourceType.FRIEND_PAGE && "w-full"
       }`}
     >

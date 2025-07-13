@@ -29,15 +29,18 @@ function SmallFriendRequests() {
   return (
     <>
       <Collapse in={open}></Collapse>
-      <div className="flex flex-col gap-5 items-center font-[Trispace] bg-[#D9D9D9] bg-opacity-5 p-2 w-full h-full">
+      <div
+        className={`flex flex-col ${
+          friendRequests.length > 0 && "gap-5"
+        } px-4 items-center font-[Trispace] bg-[#D9D9D9] bg-opacity-5 p-4 w-full h-full rounded-[10px]`}
+      >
         <div
           onClick={() => setOpen(!open)}
           className="flex justify-between w-full"
         >
           <img
-            src={`../../public/large_expense_types/${
-              open ? "fi_skip-back" : "fi_skip-forward"
-            }.svg`}
+            src={`../../public/${open ? "up" : "down"}.svg`}
+            className="scale-150"
           />
           <h3>
             <span
@@ -59,13 +62,11 @@ function SmallFriendRequests() {
             Requests
           </h3>
           <img
-            style={{ opacity: 1 }}
-            src={`../../public/large_expense_types/${
-              open ? "fi_skip-back" : "fi_skip-forward"
-            }.svg`}
+            className="scale-150"
+            src={`../../public/${open ? "up" : "down"}.svg`}
           />
         </div>
-        <Collapse in={open}>
+        <Collapse style={{ width: "100%" }} in={open}>
           {friendRequests.length > 0 && (
             <>
               {friendRequests?.map((request) => (
@@ -95,7 +96,7 @@ function SmallFriendRequests() {
               ))}
             </>
           )}
-          <div className="flex-column gap-10 pt-4">
+          <div className="flex-column items-center gap-10 p-4 pb-2 w-full">
             <FriendRequestForm modalFunc={setOpenForm} modalOpen={openForm} />
           </div>
         </Collapse>

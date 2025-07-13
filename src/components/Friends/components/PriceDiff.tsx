@@ -23,24 +23,16 @@ function PriceDiff({
   ).toFixed(2);
 
   if (noExpenses) {
-    return <h4 className="text-[22px]">$0.00</h4>;
+    return <h3>$0.00</h3>;
   }
   if (priceDiff === "0.00") {
-    return <h4 className="text-[22px]">$0.00</h4>;
+    return <h3>$0.00</h3>;
   }
   if (youSpentMore) {
-    return (
-      <h4 className="text-[22px]" style={{ color: "#509F33" }}>
-        ${priceDiff}
-      </h4>
-    );
+    return <h3 style={{ color: "#509F33" }}>${priceDiff}</h3>;
   }
   if (!youSpentMore) {
-    return (
-      <h4 className="text-[22px]" style={{ color: "#D96161" }}>
-        -${priceDiff}
-      </h4>
-    );
+    return <h3 style={{ color: "#D96161" }}>-${priceDiff}</h3>;
   }
   return <></>;
 }

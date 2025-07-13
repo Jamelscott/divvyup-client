@@ -29,7 +29,7 @@ function FriendsPage() {
 
   return (
     <>
-      <div className="hidden max-[600px]:flex flex-col items-center p-5 justify-center">
+      <div className="hidden max-[600px]:flex flex-col items-center p-5 justify-center mb-[85px]">
         <SmallFriendRequests />
         <div className="pt-4">
           <SmallFriendsList sourceType={FriendSourceType.FRIENDS_PAGE} />
@@ -38,7 +38,7 @@ function FriendsPage() {
 
       <div className="max-[600px]:hidden">
         <div
-          className="flex justify-between p-[40px] gap-5 w-full"
+          className="flex justify-between p-4 gap-5 w-full"
           style={{ overflow: "hidden" }}
         >
           <FriendsList sourceType={FriendSourceType.FRIENDS_PAGE} />

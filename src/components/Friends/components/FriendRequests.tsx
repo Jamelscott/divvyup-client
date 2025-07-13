@@ -27,8 +27,8 @@ function FriendRequests() {
   };
   return (
     <>
-      <div className="flex flex-col gap-5 items-center font-[Trispace] bg-[#D9D9D9] bg-opacity-5 p-5 w-[300px] h-full">
-        <h3>
+      <div className="flex shadow-lg flex-col gap-5 items-center font-[Trispace] bg-[#D9D9D9] bg-opacity-5 p-5 w-[300px] h-full rounded-[10px]">
+        <h3 className="flex gap-2 items-center">
           <span
             ref={circleNum}
             style={{

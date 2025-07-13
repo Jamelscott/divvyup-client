@@ -77,10 +77,10 @@ function SmallExpenseModal({
   return (
     <div className="bg-[#102D27] flex justify-center p-5">
       <form onSubmit={handleSubmit((data) => submitting(data))}>
-        <div className="flex justify-center w-full p-2 gap-5">
-          <img src={`../../public/large_expense_types/fi_skip-back.svg`} />
+        <div className="flex justify-center w-full p-2 gap-5" onClick={onClose}>
+          <img src={`../../public/down.svg`} />
           <h1>New Expense</h1>
-          <img src={`../../public/large_expense_types/fi_skip-back.svg`} />
+          <img src={`../../public/down.svg`} />
         </div>
         <div className={`flex gap-10 justify-center mt-5 mb-10`}>
           <div className="flex flex-col gap-5">
