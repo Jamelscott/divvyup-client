@@ -1,20 +1,18 @@
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { DataState, getFriends, selectFriendsState } from "../slices/friendsSlice"
-import { AppDispatch } from "./store"
-import { selectUser } from "../slices/userSlice"
-import { User } from "../types"
+import { useDispatch, useSelector } from "react-redux";
+import { getFriends, selectFriendsState } from "../slices/friendsSlice";
+import { AppDispatch } from "./store";
+import { selectUser } from "../slices/userSlice";
+import { DataState } from "@/types";
 
 const useDataPersist = async () => {
-        const user = useSelector(selectUser)
-        const friendsDataState = useSelector(selectFriendsState)
-        const dispatch = useDispatch<AppDispatch>()
-        const [friends, setFriends] = useState<User[]>()
+  const user = useSelector(selectUser);
+  const friendsDataState = useSelector(selectFriendsState);
+  const dispatch = useDispatch<AppDispatch>();
 
-        if (user.id && friendsDataState === DataState.INITIAL) {
-                await dispatch(getFriends(user.id))
-        }
-        return;
-}
+  if (user.id && friendsDataState === DataState.INITIAL) {
+    await dispatch(getFriends(user.id));
+  }
+  return;
+};
 
-export default useDataPersist
+export default useDataPersist;

@@ -52,7 +52,7 @@ function ExpenseModal({
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [typeValue, setTypeValue] = useState<string>(
+  const [typeValue, _setTypeValue] = useState<string>(
     expenseData?.type || "misc"
   );
 
