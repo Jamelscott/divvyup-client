@@ -61,10 +61,10 @@ function Expense({
   return (
     <>
       <div
-        className="grid grid-cols-5 w-full font-[trispace]"
+        className="grid grid-cols-5 w-full font-[trispace] max-[600px]:grid-cols-3"
         key={`${expense.id}`}
       >
-        <div>
+        <div className="flex flex-col items-center justify-center">
           <h2
             style={{
               color: `${!youOwe ? "#509F33" : "#D96161"}`,
@@ -86,18 +86,18 @@ function Expense({
             ({expense.splitpercentage}%)
           </p>
         </div>
-        <div className="flex flex-col items-center justify-center w-12">
+        <div className="flex flex-col items-center justify-center">
           <ExpenseTypePopover
             expenseIcon={expenseIcon}
             expenseName={expense.type}
           />
         </div>
-        <div className="flex flex-col items-center justify-center w-20 text-center text-lg font-bold leading-6">
+        <div className="flex flex-col items-center justify-center text-center text-lg font-bold leading-6">
           <p className="break-words" style={{ margin: "0 0" }}>
             {expense.name}
           </p>
         </div>
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center max-[600px]:hidden">
           <p className="break-words">{date}</p>
         </div>
         {sourceType === ExpenseListType.USER_SPECIFIC ? (
@@ -108,7 +108,7 @@ function Expense({
             />
           </div>
         ) : (
-          <div className="flex gap-5 justify-around items-center">
+          <div className="flex gap-5 justify-around items-center max-[600px]:hidden">
             <p
               className=" m-0 hover:underline cursor-pointer"
               onClick={() => navigate("/friends/" + friend?.id)}

@@ -1,0 +1,23 @@
+{
+        "name":"Billy",
+        "short_name":"Billy",
+        "start_url":"/",
+        "icons":[
+            {
+                "src": "assets/billy_logo.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "maskable"
+            },
+            {
+                "src": "assets/small_expense_icons/dining_out.svg",
+                "sizes": "512x512",
+                "type": "image/svg",
+                "purpose": "any"
+            }
+        ],
+        "theme_color":"#000000",
+        "background_color":"#ffffff",
+        "display":"fullscreen",
+        "orientation":"portrait"
+}

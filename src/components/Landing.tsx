@@ -143,10 +143,10 @@ const Landing = ({
           </div>
         </div>
       </div>
-      <div className="hidden max-[450px]:flex">
+      <div className="hidden max-[600px]:flex">
         <SignUpForm mobile open={openSignUp} />
       </div>
-      <div className="hidden max-[450px]:flex">
+      <div className="hidden max-[600px]:flex">
         <LoginForm
           mobile
           setOpenLogin={setOpenLogin}

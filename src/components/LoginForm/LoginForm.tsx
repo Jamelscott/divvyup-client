@@ -2,7 +2,7 @@ import { getUser, selectUser } from "@/slices/userSlice";
 import { UserLogin } from "@/types.d";
 import { AppDispatch } from "@/utils/store";
 import { Button, PasswordInput, Text, TextInput } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +26,7 @@ const LoginForm = ({
   const user = useSelector(selectUser);
   const navigate = useNavigate();
   const [loginCreds, setLoginCreds] = useState<UserLogin>(DEFAULT_LOGINCREDS);
-
+  const ref = useRef<HTMLInputElement>(null);
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -46,6 +46,13 @@ const LoginForm = ({
   };
   const canSubmit =
     !!loginCreds.usernameOrEmail.charAt(3) && !!loginCreds.password.charAt(4);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  }, [open]);
+
   return (
     <form
       style={{
@@ -53,7 +60,7 @@ const LoginForm = ({
       }}
       className={`rounded-t-xl ${
         mobile &&
-        "shadow-[0px_-10px_20px_rgba(0,0,0,0.5)] max-md:block absolute w-screen max-w-[450px] right-0 bottom-0 overflow-hidden h-full transition-[max-height] duration-300 ease-linear"
+        "shadow-[0px_-10px_20px_rgba(0,0,0,0.5)] max-md:block absolute w-screen max-w-[600px] right-0 bottom-0 overflow-hidden h-full transition-[max-height] duration-300 ease-linear"
       }`}
       onSubmit={handleLogin}
     >
@@ -67,6 +74,7 @@ const LoginForm = ({
         </div>
         <div className="w-[100%]">
           <TextInput
+            ref={ref}
             color="white"
             label="Username or Email"
             size="md"

@@ -48,18 +48,18 @@ const BalaneceDetails = () => {
   }, [friends, expenses]);
   return (
     <div className="flex justify-around gap-4 font-[Trispace] rounded-[10px] bg-[rgba(217,217,217,0.04)] shadow-lg p-3">
-      <div className="flex flex-1 flex-col items-center justify-center">
+      <div className="flex text-center flex-1 flex-col items-center justify-center">
         <h2>Total Difference</h2>
         {totalDiff}
       </div>
       <div
-        className="flex flex-1 flex-col items-center justify-around border border-r-2 border-l-2 border-t-0 border-b-0"
+        className="flex text-center flex-1 flex-col items-center justify-around border border-r-2 border-l-2 border-t-0 border-b-0"
         style={{ borderColor: "rgba(137, 137, 137, 0.2)" }}
       >
         <h2>You've spent</h2>
         {totalOwing}
       </div>
-      <div className="flex flex-1 flex-col items-center justify-center">
+      <div className="flex text-center flex-1 flex-col items-center justify-center">
         <h2>Friends spent</h2>
         {totalLent}
       </div>

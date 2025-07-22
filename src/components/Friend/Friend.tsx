@@ -25,19 +25,6 @@ const Friend = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // const { friend, sharedExpenses } = useMemo(() => {
-  //   const friend = friends && friends.find((friend) => friend.id === params.id);
-  //   const sharedExpenses = expenses
-  //     .filter(
-  //       (expense) =>
-  //         expense.lender === friend?.id || expense.ower === friend?.id
-  //     )
-  //     .sort(
-  //       (a, b) =>
-  //         new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf()
-  //     );
-  //   return { friend, sharedExpenses };
-  // }, [friends, expenses]);
   const sortedFriends = useMemo(
     () =>
       sharedExpenses.sort((a, b) => {

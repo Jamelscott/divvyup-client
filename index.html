@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BILLY</title>
-    <link rel="icon" href="./public//B.svg" />
+    <link rel="icon" href="./public/billy_logo.png" />
+    <link rel="manifest" href="./manifest.json" />
     <link
       rel="preload"
       as="font"
@@ -24,5 +25,10 @@
   <body style="margin: 0px 0px; padding: 0px 0px; background-color: #0f2521">
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("");
+      }
+    </script>
   </body>
 </html>

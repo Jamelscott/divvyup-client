@@ -23,35 +23,29 @@ const HomeHeader = () => {
 
   return (
     <>
-      <div>
-        <div className="flex items-center justify-between gap-4 pb-2">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full border-black border bg-slate-500">
-              <AdvancedImage cldImg={cld} />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-4xl font-[montserrat] text-[#11B5E4]">
-                Home
-              </h1>
-              <p className="text-lg">
-                Welcome back{" "}
-                {username.charAt(0).toUpperCase() + username.slice(1)}
-              </p>
-            </div>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-20 h-20 rounded-full border-black border">
+            <AdvancedImage cldImg={cld} />
           </div>
-          <div>
-            <Button
-              style={{ border: "1px solid grey" }}
-              size="sm"
-              color="cyan"
-              onClick={() => setOpenModal(true)}
-            >
-              add expense
-            </Button>{" "}
+          <div className="flex flex-col">
+            <h1 className="text-4xl font-[montserrat] text-[#11B5E4]">Home</h1>
+            <p className="text-lg">Welcome back {username}</p>
           </div>
         </div>
-        <Hr style={{ margin: "0px" }} />
+        <div>
+          <Button
+            style={{ border: "1px solid grey" }}
+            size="sm"
+            color="cyan"
+            onClick={() => setOpenModal(true)}
+            className="w-[30px] h-[30px]"
+          >
+            add expense
+          </Button>{" "}
+        </div>
       </div>
+      <Hr style={{ margin: "0px" }} />
       {openModal && <ExpenseModal onClose={() => setOpenModal(false)} />}
     </>
   );

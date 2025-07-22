@@ -2,13 +2,14 @@ import { selectUser } from "@/slices/userSlice";
 import { UserSignUp } from "@/types.d";
 import { handleSignUpSubmit } from "@/utils/userHelpers";
 import { Button, PasswordInput, Text, TextInput } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const SignUpForm = ({ open, mobile }: { open: boolean; mobile: boolean }) => {
   const navigate = useNavigate();
   const user = useSelector(selectUser);
+  const ref = useRef<HTMLInputElement>(null);
   const [signUpCreds, setSignUpCreds] = useState<UserSignUp>({
     username: "",
     email: "",
@@ -40,6 +41,12 @@ const SignUpForm = ({ open, mobile }: { open: boolean; mobile: boolean }) => {
     !!signUpCreds.confirmPassword.charAt(4) &&
     signUpCreds.password === signUpCreds.confirmPassword;
 
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  }, [open]);
+
   return (
     <form
       style={{
@@ -47,7 +54,7 @@ const SignUpForm = ({ open, mobile }: { open: boolean; mobile: boolean }) => {
       }}
       className={`rounded-t-xl ${
         mobile &&
-        "shadow-[0px_-10px_20px_rgba(0,0,0,0.5)] max-md:block absolute w-screen max-w-[450px] right-0 bottom-0 overflow-hidden h-full transition-[max-height] duration-300 ease-linear"
+        "shadow-[0px_-10px_20px_rgba(0,0,0,0.5)] max-md:block absolute w-screen right-0 bottom-0 overflow-hidden h-full transition-[max-height] duration-300 ease-linear"
       }`}
       onSubmit={signUpSubmit}
     >
@@ -60,6 +67,7 @@ const SignUpForm = ({ open, mobile }: { open: boolean; mobile: boolean }) => {
           {mobile && <Text size="lg">Enter your account details</Text>}
         </div>
         <TextInput
+          ref={ref}
           className="w-[100%]"
           labelProps={{ color: "white" }}
           color="white"

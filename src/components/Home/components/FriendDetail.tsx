@@ -39,6 +39,7 @@ const FriendDetail = ({
   })
     .image(photo)
     .resize(fill().width(200).height(200))
+    .format("png")
     .roundCorners(byRadius(1000))
     .effect(outline().color("grey"));
 
@@ -54,12 +55,12 @@ const FriendDetail = ({
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col md:flex-row items-center gap-3">
       <div className="w-12 h-12 rounded-full border-black border bg-slate-500">
         <AdvancedImage cldImg={cld} />
       </div>
-      <div className="flex-1 flex justify-between items-center">
-        <div className="flex flex-col">
+      <div className="flex-1 flex max-md:flex-col md:justify-between items-center gap-1 flex-wrap">
+        <div className="flex flex-col text-center md:text-start">
           <p
             className=" hover:underline cursor-pointer"
             onClick={() => navigate(`/friends/${id}`)}
